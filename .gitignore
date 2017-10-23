@@ -1,0 +1,8 @@
+
+*.sdf
+
+\.vs/SPH/v14/\.suo
+
+Debug/
+
+SPH\.VC\.opendb
