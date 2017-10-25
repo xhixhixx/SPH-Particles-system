@@ -30,7 +30,7 @@ void reshape(int w, int h)
 }
 
 void RenderParticleSystem() {
-	glPointSize(10.0f);
+	glPointSize(5.0f);
 	glColor3f(0.2f, 0.2f, 1.0f);
 
 	for (int i = 0; i < pSystem->getParticles().size(); ++i)
@@ -45,7 +45,10 @@ void RenderParticleSystem() {
 
 //
 void CreateParticleSystem() {
-	pSystem = make_unique<ParticleSystem>();
+	int numX = 10;
+	int numY = 10;
+	int numZ = 1;
+	pSystem = make_unique<ParticleSystem>(numX, numY, numZ);
 	pSystem->createParticleSystem();
 }
 
@@ -133,6 +136,7 @@ int main(int argc, char* argv[]) {
 	//create particle system
 	CreateParticleSystem();
 	//display func
+	glEnable(GL_DEPTH_TEST);
 	glutReshapeFunc(reshape);
 	glutDisplayFunc(display);
 	glutIdleFunc(display);

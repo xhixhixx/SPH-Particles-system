@@ -6,6 +6,18 @@ ParticleSystem::~ParticleSystem()
 
 void ParticleSystem::createParticleSystem()
 {
-	shared_ptr<Particle> p(new Particle(Vec3(1.0, 1.0, 1.0)));
-	particles.push_back(p);
+	double gap = 0.5;
+	double widthX = xCnt * gap;
+	double widthY = yCnt * gap;
+	double widthZ = zCnt * gap;
+	
+	for (int i = 0; i < xCnt; ++i) {
+		for (int j = 0; j < yCnt; ++j) {
+			for (int k = 0; k < zCnt; ++k) {
+				Vec3 pos(- widthX / 2 + i * gap, - widthY / 2 + j * gap, - widthZ / 2 + k * gap);
+				shared_ptr<Particle> p(new Particle(pos));
+				particles.push_back(p);
+			}
+		}
+	}
 }

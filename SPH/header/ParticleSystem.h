@@ -7,7 +7,16 @@ using namespace std;
 class ParticleSystem
 {
 public:
-	ParticleSystem() {};
+	ParticleSystem() {
+		xCnt = 1;
+		yCnt = 1;
+		zCnt = 1;
+	};
+	ParticleSystem(int _xCnt, int _yCnt, int _zCnt) {
+		xCnt = _xCnt;
+		yCnt = _yCnt;
+		zCnt = _zCnt;
+	}
 	virtual ~ParticleSystem();
 
 public:
@@ -15,6 +24,7 @@ public:
 	vector<shared_ptr<Particle>>& getParticles() { return particles; }
 
 private: 
+	int xCnt, yCnt, zCnt;
 	vector<shared_ptr<Particle>> particles;
 };
 
