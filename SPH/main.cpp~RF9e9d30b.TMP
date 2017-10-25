@@ -3,16 +3,21 @@
 #include <GL\freeglut.h>
 #include <iostream>
 #include "header\ParticleSystem.h"
+#include "3rdpartylib\trackball.h"
 #include "header\Constant.h"
 
 unique_ptr<ParticleSystem> pSystem;
+TrackBall tb(GLUT_LEFT_BUTTON, GLUT_MIDDLE_BUTTON, GLUT_RIGHT_BUTTON);
 
 // angle of rotation for the camera direction
 float angle = 0.0f;
+
 // actual vector representing the camera's direction
 float lx = 0.0f, lz = -1.0f;
+
 // XZ position of the camera
-float x = 0.0f, z = 0.0f;
+float x = 0.0f, z = 5.0f;
+
 // the key states. These variables will be zero
 //when no key is being presses
 float deltaAngle = 0.0f;
@@ -21,6 +26,7 @@ int xOrigin = -1;
 
 void reshape(int w, int h)
 {
+	//tb.reshape(w, h);
 	glViewport(0, 0, w, h);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -109,15 +115,19 @@ void display()
 	// Reset transformations
 	glLoadIdentity();
 	// Set the camera
-	glTranslatef(0.0f, 0.0f, -30.0f);
 	gluLookAt(x, 1.0f, z,
 		x + lx, 1.0f, z + lz,
 		0.0f, 1.0f, 0.0f);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+	glLoadIdentity();
+	glTranslatef(0.0f, 0.0f, -30.0f);
 	
 	glPushMatrix();
+
+	//tb.applyTransform();
 	//render
 	drawContainer(BOX_SIZE_X / 2, BOX_SIZE_Y / 2, BOX_SIZE_Z / 2);
 	glEnable(GL_POINT_SMOOTH);
@@ -130,6 +140,7 @@ void display()
 
 static void myMouse(int button, int state, int x, int y)
 {
+	//tb.mouse(button, state, x, y);
 	// only start motion if the left button is pressed
 	if (button == GLUT_LEFT_BUTTON) {
 
@@ -146,6 +157,7 @@ static void myMouse(int button, int state, int x, int y)
 
 static void myMotion(int x, int y)
 {
+	//tb.motion(x, y);
 	// this will only be true when the left button is down
 	if (xOrigin >= 0) {
 

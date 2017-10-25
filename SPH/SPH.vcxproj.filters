@@ -27,9 +27,6 @@
     <ClCompile Include="ParticleSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="3rdpartylib\trackball.cpp">
-      <Filter>3rpartylib</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="header\Particle.h">
@@ -37,9 +34,6 @@
     </ClInclude>
     <ClInclude Include="header\ParticleSystem.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="3rdpartylib\trackball.h">
-      <Filter>3rpartylib</Filter>
     </ClInclude>
     <ClInclude Include="header\Constant.h">
       <Filter>Header Files</Filter>
