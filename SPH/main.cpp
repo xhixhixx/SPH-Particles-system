@@ -25,7 +25,7 @@ void reshape(int w, int h)
 
 //create a container of -10 10 in x, -5, 5 in y, -5,5 in z
 void drawContainer() {
-	glLineWidth(2.0f);
+	glLineWidth(2.0f); 
 	glColor3f(1.0f, 0.0f, 0.0f);
 
 	glBegin(GL_LINES);
