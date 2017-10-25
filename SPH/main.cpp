@@ -10,6 +10,9 @@ using namespace std;
 
 #define WINDOW_WIDTH  960
 #define WINDOW_HEIGHT 720
+#define BOX_SIZE_X 20.0
+#define BOX_SIZE_Y 10.0
+#define BOX_SIZE_Z 10.0
 
 unique_ptr<ParticleSystem> pSystem;
 TrackBall tb(GLUT_LEFT_BUTTON, GLUT_MIDDLE_BUTTON, GLUT_RIGHT_BUTTON);
@@ -53,38 +56,38 @@ void CreateParticleSystem() {
 }
 
 //create a container of -10 10 in x, -5, 5 in y, -5,5 in z
-void drawContainer() {
+void drawContainer(double boxX, double boxY, double boxZ) {
 	glLineWidth(2.0f); 
 	glColor3f(1.0f, 0.0f, 0.0f);
 
 	glBegin(GL_LINES);
-	glVertex3f(-10.0f, 5.0f, 5.0f);
-	glVertex3f(10.0f, 5.0f, 5.0f);
-	glVertex3f(-10.0f, -5.0f, 5.0f);
-	glVertex3f(-10.0f, 5.0f, 5.0f);
-	glVertex3f(10.0f, -5.0f, 5.0f);
-	glVertex3f(10.0f, 5.0f, 5.0f);
-	glVertex3f(-10.0f, -5.0f, 5.0f);
-	glVertex3f(10.0f, -5.0f, 5.0f);
+	glVertex3d(-boxX, boxY, boxZ);
+	glVertex3d(boxX, boxY, boxZ);
+	glVertex3d(-boxX, -boxY, boxZ);
+	glVertex3d(-boxX, boxY, boxZ);
+	glVertex3d(boxX, -boxY, boxZ);
+	glVertex3d(boxX, boxY, boxZ);
+	glVertex3d(-boxX, -boxY, boxZ);
+	glVertex3d(boxX, -boxY, boxZ);
 
-	glVertex3f(-10.0f, 5.0f, -5.0f);
-	glVertex3f(10.0f, 5.0f, -5.0f);
-	glVertex3f(-10.0f, -5.0f, -5.0f);
-	glVertex3f(-10.0f, 5.0f, -5.0f);
-	glVertex3f(10.0f, -5.0f, -5.0f);
-	glVertex3f(10.0f, 5.0f, -5.0f);
-	glVertex3f(-10.0f, -5.0f, -5.0f);
-	glVertex3f(10.0f, -5.0f, -5.0f);
+	glVertex3d(-boxX, boxY, -boxZ);
+	glVertex3d(boxX, boxY, -boxZ);
+	glVertex3d(-boxX, -boxY, -boxZ);
+	glVertex3d(-boxX, boxY, -boxZ);
+	glVertex3d(boxX, -boxY, -boxZ);
+	glVertex3d(boxX, boxY, -boxZ);
+	glVertex3d(-boxX, -boxY, -boxZ);
+	glVertex3d(boxX, -boxY, -boxZ);
 
-	glVertex3f(-10.0f, -5.0f, 5.0f);
-	glVertex3f(-10.0f, -5.0f, -5.0f);
-	glVertex3f(-10.0f, 5.0f, 5.0f);
-	glVertex3f(-10.0f, 5.0f, -5.0f);
+	glVertex3f(-boxX, -boxY, boxZ);
+	glVertex3f(-boxX, -boxY, -boxZ);
+	glVertex3f(-boxX, boxY, boxZ);
+	glVertex3f(-boxX, boxY, -boxZ);
 
-	glVertex3f(10.0f, -5.0f, 5.0f);
-	glVertex3f(10.0f, -5.0f, -5.0f);
-	glVertex3f(10.0f, 5.0f, 5.0f);
-	glVertex3f(10.0f, 5.0f, -5.0f);
+	glVertex3f(boxX, -boxY, boxZ);
+	glVertex3f(boxX, -boxY, -boxZ);
+	glVertex3f(boxX, boxY, boxZ);
+	glVertex3f(boxX, boxY, -boxZ);
 	glEnd();
 }
 
@@ -102,7 +105,7 @@ void display()
 
 	tb.applyTransform();
 	//render
-	drawContainer();
+	drawContainer(BOX_SIZE_X / 2, BOX_SIZE_Y / 2, BOX_SIZE_Z / 2);
 	glEnable(GL_POINT_SMOOTH);
 	RenderParticleSystem();
 
