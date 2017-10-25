@@ -5,14 +5,9 @@
 #include <iostream>
 #include "header\ParticleSystem.h"
 #include "3rdpartylib\trackball.h"
+#include "header\Constant.h"
 
 using namespace std;
-
-#define WINDOW_WIDTH  960
-#define WINDOW_HEIGHT 720
-#define BOX_SIZE_X 20.0
-#define BOX_SIZE_Y 10.0
-#define BOX_SIZE_Z 10.0
 
 unique_ptr<ParticleSystem> pSystem;
 TrackBall tb(GLUT_LEFT_BUTTON, GLUT_MIDDLE_BUTTON, GLUT_RIGHT_BUTTON);
@@ -48,9 +43,9 @@ void RenderParticleSystem() {
 
 //
 void CreateParticleSystem() {
-	int numX = 10;
-	int numY = 10;
-	int numZ = 1;
+	int numX = NUM_PARTICLE_X;
+	int numY = NUM_PARTICLE_Y;
+	int numZ = NUM_PARTICLE_Z;
 	pSystem = make_unique<ParticleSystem>(numX, numY, numZ);
 	pSystem->createParticleSystem();
 }
@@ -93,10 +88,8 @@ void drawContainer(double boxX, double boxY, double boxZ) {
 
 void display()
 {
-
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-
 
 	glLoadIdentity();
 	glTranslatef(0.0f, 0.0f, -30.0f);

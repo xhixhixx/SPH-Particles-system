@@ -47,5 +47,8 @@
     <ClInclude Include="3rdpartylib\trackball.h">
       <Filter>3rpartylib</Filter>
     </ClInclude>
+    <ClInclude Include="header\Constant.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
