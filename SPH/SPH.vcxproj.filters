@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="3rpartylib">
+      <UniqueIdentifier>{cbf6c69d-8d00-4220-b90b-608aa3510f51}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -24,6 +27,12 @@
     <ClCompile Include="Vec3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ParticleSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdpartylib\trackball.cpp">
+      <Filter>3rpartylib</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="header\Particle.h">
@@ -31,6 +40,12 @@
     </ClInclude>
     <ClInclude Include="header\Vec3.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="header\ParticleSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdpartylib\trackball.h">
+      <Filter>3rpartylib</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
