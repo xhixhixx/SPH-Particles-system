@@ -1,4 +1,3 @@
-//Jeff Chastine
 #include <Windows.h>
 #include <GL\glew.h>
 #include <GL\freeglut.h>
@@ -6,8 +5,6 @@
 #include "header\ParticleSystem.h"
 #include "3rdpartylib\trackball.h"
 #include "header\Constant.h"
-
-using namespace std;
 
 unique_ptr<ParticleSystem> pSystem;
 TrackBall tb(GLUT_LEFT_BUTTON, GLUT_MIDDLE_BUTTON, GLUT_RIGHT_BUTTON);

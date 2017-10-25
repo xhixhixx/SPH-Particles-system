@@ -14,7 +14,7 @@ void ParticleSystem::createParticleSystem()
 	for (int i = 0; i < xCnt; ++i) {
 		for (int j = 0; j < yCnt; ++j) {
 			for (int k = 0; k < zCnt; ++k) {
-				Vec3 pos(- widthX / 2 + i * gap, - widthY / 2 + j * gap, - widthZ / 2 + k * gap);
+				vec3 pos(- widthX / 2 + i * gap, - widthY / 2 + j * gap, - widthZ / 2 + k * gap);
 				shared_ptr<Particle> p(new Particle(pos));
 				particles.push_back(p);
 			}

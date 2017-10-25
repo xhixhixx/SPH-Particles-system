@@ -6,3 +6,9 @@
 Debug/
 
 SPH\.VC\.opendb
+
+*.html
+
+*.png
+
+SPH/3rdpartylib/glm-0\.9\.8\.5/doc/
