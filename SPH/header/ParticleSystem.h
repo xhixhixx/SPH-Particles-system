@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 #include "Particle.h"
+#include <unordered_map>
 using namespace std;
 class ParticleSystem
 {
@@ -23,9 +24,13 @@ public:
 	void createParticleSystem();
 	vector<shared_ptr<Particle>>& getParticles() { return particles; }
 
+private:
+	void populateNeighborGrid();
+
 private: 
 	int xCnt, yCnt, zCnt;
 	vector<shared_ptr<Particle>> particles;
+	vector<vector<vector<unordered_map<shared_ptr<Particle>, int>>>> grid;
 };
 
 #endif
