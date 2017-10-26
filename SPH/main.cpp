@@ -33,15 +33,36 @@ void reshape(int w, int h)
 	glTranslatef(0.0f, 0.0f, -30.0f);
 }
 
+void SetNormalParticleColor() {
+	glColor3f(0.2f, 0.2f, 1.0f);
+}
+
+void SetParticleColorByCell(double r, double g, double b) {
+	glColor3d(r, g, b);
+}
+
 void RenderParticleSystem() {
 	glPointSize(PARTICLE_SIZE);
-	//glColor3f(0.2f, 0.2f, 1.0f);
-
+	SetNormalParticleColor();
 	vector<shared_ptr<Particle>>& pList = pSystem->getParticles();
+
+	int focusParticleId = 915;
+
 	for (int i = 0; i < pList.size(); ++i)
 	{
 		//render each cell in a different color
-		glColor3f(0.1f * pList[i]->cellPosition.x, 0.1f * pList[i]->cellPosition.y, 0.1f * pList[i]->cellPosition.z);
+		//SetParticleColorByCell(0.1f * pList[i]->cellPosition.x, 0.1f * pList[i]->cellPosition.y, 0.1f * pList[i]->cellPosition.z);
+
+		//
+		if (pList[i]->id == focusParticleId) {
+			glColor3d(1.0, 0.0, 0.0);
+		}
+		else if (pSystem->checkIsNeighbor(focusParticleId, pList[i]->id)) {
+			glColor3d(0.0, 1.0, 0.0);
+		}
+		else {
+			SetNormalParticleColor();
+		}
 
 		glBegin(GL_POINTS);
 		glVertex3d(pList[i]->position.x,
@@ -84,15 +105,15 @@ void drawContainer(double boxX, double boxY, double boxZ) {
 	glVertex3d(-boxX, -boxY, -boxZ);
 	glVertex3d(boxX, -boxY, -boxZ);
 
-	glVertex3f(-boxX, -boxY, boxZ);
-	glVertex3f(-boxX, -boxY, -boxZ);
-	glVertex3f(-boxX, boxY, boxZ);
-	glVertex3f(-boxX, boxY, -boxZ);
+	glVertex3d(-boxX, -boxY, boxZ);
+	glVertex3d(-boxX, -boxY, -boxZ);
+	glVertex3d(-boxX, boxY, boxZ);
+	glVertex3d(-boxX, boxY, -boxZ);
 
-	glVertex3f(boxX, -boxY, boxZ);
-	glVertex3f(boxX, -boxY, -boxZ);
-	glVertex3f(boxX, boxY, boxZ);
-	glVertex3f(boxX, boxY, -boxZ);
+	glVertex3d(boxX, -boxY, boxZ);
+	glVertex3d(boxX, -boxY, -boxZ);
+	glVertex3d(boxX, boxY, boxZ);
+	glVertex3d(boxX, boxY, -boxZ);
 	glEnd();
 }
 

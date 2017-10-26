@@ -23,11 +23,15 @@ public:
 public:
 	void createParticleSystem();
 	vector<shared_ptr<Particle>>& getParticles() { return particles; }
+	vector<unordered_map<shared_ptr<Particle>, int>> getNeighbors(int pId);
+	ivec3 getCellCount() const { return cellCount; }
+	bool checkIsNeighbor(int pId1, int pId2) const;
 
 private:
 	void populateNeighborGrid();
 
 private: 
+	ivec3 cellCount;
 	int xCnt, yCnt, zCnt;
 	vector<shared_ptr<Particle>> particles;
 	vector<vector<vector<unordered_map<shared_ptr<Particle>, int>>>> grid;
