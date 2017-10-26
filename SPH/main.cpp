@@ -48,7 +48,7 @@ void RenderParticleSystem() {
 
 	int focusParticleId = 915;
 
-	for (int i = 0; i < pList.size(); ++i)
+	for (unsigned int i = 0; i < pList.size(); ++i)
 	{
 		//render each cell in a different color
 		//SetParticleColorByCell(0.1f * pList[i]->cellPosition.x, 0.1f * pList[i]->cellPosition.y, 0.1f * pList[i]->cellPosition.z);

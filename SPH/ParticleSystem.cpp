@@ -39,16 +39,16 @@ void ParticleSystem::createParticleSystem()
 	populateNeighborGrid();
 }
 
-vector<unordered_map<shared_ptr<Particle>, int>> ParticleSystem::getNeighbors(int pId) {
+vector<ivec3> ParticleSystem::getNeighborCells(int pId) {
 	shared_ptr<Particle> p = particles[pId - 1];
 	//add all map of neighbor cell if valid cell
-	vector < unordered_map<shared_ptr<Particle>, int>> res;
+	vector <ivec3> res;
 	for (auto d : DIRECTION3D) {
 		int newX = p->cellPosition.x + d[0];
 		int newY = p->cellPosition.y + d[1];
 		int newZ = p->cellPosition.z + d[2];
 		if (newX >= 0 && newY >= 0 && newZ >= 0 && newX < cellCount.x && newY < cellCount.y && newZ < cellCount.z) {
-			res.push_back(grid[newX][newY][newZ]);
+			res.push_back(ivec3(newX, newY, newZ));
 		}
 	}
 	return res;
