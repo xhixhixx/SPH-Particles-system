@@ -23,8 +23,7 @@ void ParticleSystem::createParticleSystem()
 		for (int j = 0; j < yCnt; ++j) {
 			for (int k = 0; k < zCnt; ++k) {
 				vec3 pos(- widthX / 2 + i * INIT_PARTICLE_DISTANCE, - widthY / 2 + j * INIT_PARTICLE_DISTANCE, - widthZ / 2 + k * INIT_PARTICLE_DISTANCE);
-				shared_ptr<Particle> p(new Particle(pos, id++));
-				particles.push_back(p);
+				particles.emplace_back(make_shared<Particle>(pos, id++));
 			}
 		}
 	}
@@ -48,7 +47,7 @@ vector<ivec3> ParticleSystem::getNeighborCells(int pId) {
 		int newY = p->cellPosition.y + d[1];
 		int newZ = p->cellPosition.z + d[2];
 		if (newX >= 0 && newY >= 0 && newZ >= 0 && newX < cellCount.x && newY < cellCount.y && newZ < cellCount.z) {
-			res.push_back(ivec3(newX, newY, newZ));
+			res.emplace_back(ivec3(newX, newY, newZ));
 		}
 	}
 	return res;
