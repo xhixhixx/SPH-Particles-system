@@ -49,9 +49,6 @@ void RenderParticleSystem() {
 				pList[i]->position.z);
 		glEnd();
 	}
-
-	
-	
 }
 
 //

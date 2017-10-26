@@ -14,7 +14,7 @@
 #define NUM_PARTICLE_Y 30
 #define NUM_PARTICLE_Z 1
 #define INIT_PARTICLE_DISTANCE 0.3
-#define PARTICLE_SIZE 3.0
+#define PARTICLE_SIZE 3.5
 //kernel radius
 #define KERNEL_RADIUS 1.0
 

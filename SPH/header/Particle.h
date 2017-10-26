@@ -15,8 +15,9 @@ public:
 		color = vec3(0.0, 0.0, 1.0);
 		reCalculateGridCell();
 	};
-	Particle(vec3& pos) {
+	Particle(vec3& pos, int _id) {
 		position = vec3(pos.x, pos.y, pos.z);
+		id = _id;
 		reCalculateGridCell();
 	};
 	Particle(vec3& pos, vec3& col) {
@@ -31,6 +32,7 @@ public:
 	void printDebug();
 
 public:
+	int id;
 	vec3 position;
 	ivec3 cellPosition;
 	vec3 velocity;
