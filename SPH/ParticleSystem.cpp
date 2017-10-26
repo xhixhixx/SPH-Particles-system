@@ -7,15 +7,14 @@ ParticleSystem::~ParticleSystem()
 
 void ParticleSystem::createParticleSystem()
 {
-	double gap = 0.5;
-	double widthX = xCnt * gap;
-	double widthY = yCnt * gap;
-	double widthZ = zCnt * gap;
+	double widthX = xCnt * INIT_PARTICLE_DISTANCE;
+	double widthY = yCnt * INIT_PARTICLE_DISTANCE;
+	double widthZ = zCnt * INIT_PARTICLE_DISTANCE;
 	
 	for (int i = 0; i < xCnt; ++i) {
 		for (int j = 0; j < yCnt; ++j) {
 			for (int k = 0; k < zCnt; ++k) {
-				vec3 pos(- widthX / 2 + i * gap, - widthY / 2 + j * gap, - widthZ / 2 + k * gap);
+				vec3 pos(- widthX / 2 + i * INIT_PARTICLE_DISTANCE, - widthY / 2 + j * INIT_PARTICLE_DISTANCE, - widthZ / 2 + k * INIT_PARTICLE_DISTANCE);
 				shared_ptr<Particle> p(new Particle(pos));
 				particles.push_back(p);
 			}

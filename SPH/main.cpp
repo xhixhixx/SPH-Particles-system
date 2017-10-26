@@ -34,17 +34,24 @@ void reshape(int w, int h)
 }
 
 void RenderParticleSystem() {
-	glPointSize(5.0f);
-	glColor3f(0.2f, 0.2f, 1.0f);
+	glPointSize(PARTICLE_SIZE);
+	//glColor3f(0.2f, 0.2f, 1.0f);
 
-	for (int i = 0; i < pSystem->getParticles().size(); ++i)
+	vector<shared_ptr<Particle>>& pList = pSystem->getParticles();
+	for (int i = 0; i < pList.size(); ++i)
 	{
+		//render each cell in a different color
+		glColor3f(0.1f * pList[i]->cellPosition.x, 0.1f * pList[i]->cellPosition.y, 0.1f * pList[i]->cellPosition.z);
+
 		glBegin(GL_POINTS);
-		glVertex3d(pSystem->getParticles()[i]->position.x,
-			pSystem->getParticles()[i]->position.y,
-			pSystem->getParticles()[i]->position.z);
+		glVertex3d(pList[i]->position.x,
+				pList[i]->position.y,
+				pList[i]->position.z);
 		glEnd();
 	}
+
+	
+	
 }
 
 //
