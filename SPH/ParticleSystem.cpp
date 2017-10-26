@@ -50,6 +50,8 @@ vector<ivec3> ParticleSystem::getNeighborCells(int pId) {
 			res.emplace_back(ivec3(newX, newY, newZ));
 		}
 	}
+	//including itself 
+	res.emplace_back(p->cellPosition);
 	return res;
 }
 

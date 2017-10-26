@@ -19,6 +19,9 @@ float deltaAngle = 0.0f;
 float deltaMove = 0;
 int xOrigin = -1;
 
+//
+int particleIdInFocus = 1;
+
 void reshape(int w, int h)
 {
 	glViewport(0, 0, w, h);
@@ -46,7 +49,7 @@ void RenderParticleSystem() {
 	SetNormalParticleColor();
 	vector<shared_ptr<Particle>>& pList = pSystem->getParticles();
 
-	int focusParticleId = 915;
+	int focusParticleId = particleIdInFocus;
 
 	for (unsigned int i = 0; i < pList.size(); ++i)
 	{
@@ -183,6 +186,12 @@ static void myMotion(int x, int y)
 	}
 }
 
+void keyPressed(unsigned char key, int x, int y) {
+	if (key == 'f') {
+		particleIdInFocus = rand() % (NUM_PARTICLE_X * NUM_PARTICLE_Y * NUM_PARTICLE_Z);
+	}
+}
+
 
 int main(int argc, char* argv[]) {
 	glutInit(&argc, argv);
@@ -203,6 +212,7 @@ int main(int argc, char* argv[]) {
 
 	glutMouseFunc(myMouse);
 	glutMotionFunc(myMotion);
+	glutKeyboardFunc(keyPressed);
 
 	GLenum err = glewInit();
 	if (GLEW_OK != err) {
