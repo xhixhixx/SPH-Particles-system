@@ -20,7 +20,7 @@ float deltaMove = 0;
 int xOrigin = -1;
 
 //
-int particleIdInFocus = 1;
+int particleIdInFocus = PARTICLE_IN_FOCUS;
 
 void reshape(int w, int h)
 {
@@ -147,7 +147,7 @@ void display()
 	
 	glPushMatrix();
 	//render
-	drawContainer(BOX_SIZE_X / 2, BOX_SIZE_Y / 2, BOX_SIZE_Z / 2);
+	drawContainer(OFFSET_X, OFFSET_Y, OFFSET_Z);
 	glEnable(GL_POINT_SMOOTH);
 	RenderParticleSystem();
 	//update Particle System for the next timestep
