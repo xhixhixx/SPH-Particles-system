@@ -15,6 +15,13 @@
 #define NUM_PARTICLE_Z 1
 #define INIT_PARTICLE_DISTANCE 0.3
 #define PARTICLE_SIZE 3.5
+
+//world
+#define TIMESTEP 0.001f //second
+#define GRAVITY vec3(0.0f, -.98f, 0.0f)
+#define PARTICLE_MASS 0.01f //kg
+
+
 //kernel radius
 #define KERNEL_RADIUS 1.0
 

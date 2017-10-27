@@ -150,6 +150,8 @@ void display()
 	drawContainer(BOX_SIZE_X / 2, BOX_SIZE_Y / 2, BOX_SIZE_Z / 2);
 	glEnable(GL_POINT_SMOOTH);
 	RenderParticleSystem();
+	//update Particle System for the next timestep
+	pSystem->update();
 
 	glPopMatrix();
 

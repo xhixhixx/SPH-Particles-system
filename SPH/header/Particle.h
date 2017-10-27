@@ -18,13 +18,12 @@ public:
 	Particle(vec3& pos, int _id) {
 		position = vec3(pos.x, pos.y, pos.z);
 		id = _id;
+		velocity = vec3(0.0f);
+		acceleration = vec3(0.0f);
+		prevAcceleration = vec3(0.0f);
 		reCalculateGridCell();
 	};
-	Particle(vec3& pos, vec3& col) {
-		position = vec3(pos.x, pos.y, pos.z);
-		color = vec3(col.x, col.y, col.z);
-		reCalculateGridCell();
-	} ;
+
 	~Particle();
 
 	vec3 reCalculateGridCell();//need to call on position change
@@ -35,8 +34,11 @@ public:
 	int id;
 	vec3 position;
 	ivec3 cellPosition;
-	vec3 velocity;
 	vec3 color;
+	//sph field
+	vec3 velocity;
+	vec3 acceleration;
+	vec3 prevAcceleration;//for leapfrog
 };
 
 #endif

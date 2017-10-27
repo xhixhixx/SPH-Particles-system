@@ -22,6 +22,8 @@ public:
 
 public:
 	void createParticleSystem();
+	void update();
+
 	vector<shared_ptr<Particle>>& getParticles() { return particles; }
 	vector<ivec3> getNeighborCells(int pId);
 	ivec3 getCellCount() const { return cellCount; }

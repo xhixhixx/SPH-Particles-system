@@ -1,5 +1,6 @@
 #include "header\ParticleSystem.h"
 #include "header/Constant.h"
+#include <iostream>
 
 vector<vector<int>> DIRECTION3D = { { 1, 0, 0 },{ -1, 0, 0 },{ 0, 1, 0 },{ 0, -1, 0 },{ 0, 0, 1 },{ 0, 0, -1 },
 									{ 1, 1, 0 },{ 1, -1, 0 },{-1, 1, 0 },{ -1, -1, 0 },
@@ -36,6 +37,18 @@ void ParticleSystem::createParticleSystem()
 	cellCount = ivec3(xCell, yCell, zCell);
 	grid.resize(xCell, vector<vector<unordered_map<shared_ptr<Particle>, int>>>(yCell, vector<unordered_map<shared_ptr<Particle>, int>>(zCell, unordered_map<shared_ptr<Particle>, int>())));
 	populateNeighborGrid();
+}
+
+void ParticleSystem::update() {
+	//for all particle
+	for (auto p : particles) {
+		p->acceleration += GRAVITY;
+		//Leap frog iteration
+		p->position += p->velocity * TIMESTEP + p->prevAcceleration * (0.5f * TIMESTEP * TIMESTEP);
+
+		p->velocity += (p->acceleration + p->prevAcceleration) * (0.5f * TIMESTEP);
+		p->prevAcceleration = p->acceleration;
+	}
 }
 
 vector<ivec3> ParticleSystem::getNeighborCells(int pId) {
