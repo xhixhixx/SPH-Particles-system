@@ -42,12 +42,52 @@ void ParticleSystem::createParticleSystem()
 void ParticleSystem::update() {
 	//for all particle
 	for (auto p : particles) {
+		if (p->id != PARTICLE_IN_FOCUS) 
+			continue;
 		p->acceleration += GRAVITY;
 		//Leap frog iteration
 		p->position += p->velocity * TIMESTEP + p->prevAcceleration * (0.5f * TIMESTEP * TIMESTEP);
-
 		p->velocity += (p->acceleration + p->prevAcceleration) * (0.5f * TIMESTEP);
 		p->prevAcceleration = p->acceleration;
+		//colision with container
+		bool negate = false;
+		if (p->position.x <= -OFFSET_X) {
+			p->position.x = -OFFSET_X;
+			negate = true;
+		}
+		else if (p->position.x >= OFFSET_X) {
+			p->position.x = OFFSET_X;
+			negate = true;
+		}
+		if (p->position.y <= -OFFSET_Y) {
+			p->position.y = -OFFSET_Y;
+			negate = true;
+		}
+		else if (p->position.y >= OFFSET_Y) {
+			p->position.y = OFFSET_Y;
+			negate = true;
+		}
+		if (p->position.z <= -OFFSET_Z) {
+			p->position.z = -OFFSET_Z;
+			negate = true;
+		}
+		else if (p->position.z >= OFFSET_Z) {
+			p->position.z = OFFSET_Z;
+			negate = true;
+		}
+		if (negate) {
+			p->velocity = -p->velocity * COLLISION_DAMPING;
+		}
+
+		////////////////////////////
+		// position change 
+		// Need to update neighbor
+		/////////////////////////////
+		vec3 oldCell = p->cellPosition;
+		if (oldCell != p->reCalculateGridCell()) { //cell change, update grid
+			grid[oldCell.x][oldCell.y][oldCell.z].erase(p);
+			grid[p->cellPosition.x][p->cellPosition.y][p->cellPosition.z][p] = 1;
+		}
 	}
 }
 
