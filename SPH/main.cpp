@@ -180,7 +180,7 @@ static void myMotion(int x, int y)
 	if (xOrigin >= 0) {
 
 		// update deltaAngle
-		deltaAngle = (x - xOrigin) * 0.001f;
+		deltaAngle = (x - xOrigin) * 0.004f;
 
 		// update camera's direction
 		lx = sin(angle + deltaAngle);
