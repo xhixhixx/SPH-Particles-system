@@ -25,11 +25,6 @@
 #define PARTICLE_MASS 0.01f //kg
 #define COLLISION_DAMPING 0.7f;
 
-//kernel
-#define PI 3.14159265359
-#define POLY6 (315 / (64 * PI * pow(h, 9)))
-#define SPIKY (15 / (PI * pow(h, 6)))
-#define VISCO (15 / (2 * PI * pow(h, 3)))
 
 //kernel radius
 #define KERNEL_RADIUS 1.0
