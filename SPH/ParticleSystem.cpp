@@ -1,6 +1,7 @@
 #include "header\ParticleSystem.h"
 #include "header/Constant.h"
 #include <iostream>
+#include <glm\gtx\norm.hpp>
 
 vector<vector<int>> DIRECTION3D = { { 1, 0, 0 },{ -1, 0, 0 },{ 0, 1, 0 },{ 0, -1, 0 },{ 0, 0, 1 },{ 0, 0, -1 },
 									{ 1, 1, 0 },{ 1, -1, 0 },{-1, 1, 0 },{ -1, -1, 0 },
@@ -40,6 +41,10 @@ void ParticleSystem::createParticleSystem()
 }
 
 void ParticleSystem::update() {
+	//update system
+	calcDensityPressure();
+
+	//update acceleration and position
 	//for all particle
 	for (auto p : particles) {
 		if (p->id != PARTICLE_IN_FOCUS) 
@@ -124,5 +129,27 @@ void ParticleSystem::populateNeighborGrid() {
 		ivec3 cell = particles[i]->cellPosition;
 		grid[cell.x][cell.y][cell.z][particles[i]] = 1;
 		//particles[i]->printDebug();
+	}
+}
+
+void ParticleSystem::calcDensityPressure() {
+	for (auto p : particles) { //for each particle
+		p->density = 0.0;
+		p->pressure = 0.0;
+		//find neighbors cell
+		vector<ivec3> nCells = getNeighborCells(p->id);
+		//for each possible neighbor in cells
+		for (auto cellPos : nCells) {
+			for (auto np : grid[cellPos.x][cellPos.y][cellPos.z]) {
+				double sqrDist = 0.0; //itself
+				if (p->id != np.first->id) {
+					sqrDist = glm::distance2(p->position, np.first->position);
+				}
+				if (sqrDist < SQUARED_KERNEL_RADIUS) { //is neighbor
+					p->density += PARTICLE_MASS * POLY6 * pow(SQUARED_KERNEL_RADIUS - sqrDist, 3);
+				}
+			}
+		}
+		p->pressure = GAS_CONSTANT * (p->density - REST_DENSITY);
 	}
 }

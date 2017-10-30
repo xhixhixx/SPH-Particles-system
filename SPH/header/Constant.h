@@ -24,15 +24,18 @@
 #define GRAVITY vec3(0.0f, -.98f, 0.0f)
 #define PARTICLE_MASS 0.01f //kg
 #define COLLISION_DAMPING 0.7f;
+#define GAS_CONSTANT 1.0
+#define REST_DENSITY 1000 //kg/m^3
 
 //kernel
 #define PI 3.14159265359
-#define POLY6 (315 / (64 * PI * pow(h, 9)))
-#define SPIKY (15 / (PI * pow(h, 6)))
-#define VISCO (15 / (2 * PI * pow(h, 3)))
+#define POLY6 (315 / (64 * PI * pow(KERNEL_RADIUS, 9)))
+#define SPIKY (15 / (PI * pow(KERNEL_RADIUS, 6)))
+#define VISCO (15 / (2 * PI * pow(KERNEL_RADIUS, 3)))
 
 //kernel radius
 #define KERNEL_RADIUS 1.0
+#define SQUARED_KERNEL_RADIUS (KERNEL_RADIUS * KERNEL_RADIUS)
 
 //DEBUG
 #define PARTICLE_IN_FOCUS 900

@@ -18,9 +18,14 @@ public:
 	Particle(vec3& pos, int _id) {
 		position = vec3(pos.x, pos.y, pos.z);
 		id = _id;
+		
 		velocity = vec3(0.0f);
 		acceleration = vec3(0.0f);
 		prevAcceleration = vec3(0.0f);
+
+		density = REST_DENSITY;
+		pressure = 0.0;
+		
 		reCalculateGridCell();
 	};
 
@@ -39,6 +44,9 @@ public:
 	vec3 velocity;
 	vec3 acceleration;
 	vec3 prevAcceleration;//for leapfrog
+	
+	double density;
+	double pressure;
 };
 
 #endif
