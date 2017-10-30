@@ -135,7 +135,6 @@ void ParticleSystem::populateNeighborGrid() {
 void ParticleSystem::calcDensityPressure() {
 	for (auto p : particles) { //for each particle
 		p->density = 0.0;
-		p->pressure = 0.0;
 		//find neighbors cell
 		vector<ivec3> nCells = getNeighborCells(p->id);
 		//for each possible neighbor in cells
@@ -146,10 +145,12 @@ void ParticleSystem::calcDensityPressure() {
 					sqrDist = glm::distance2(p->position, np.first->position);
 				}
 				if (sqrDist < SQUARED_KERNEL_RADIUS) { //is neighbor
-					p->density += PARTICLE_MASS * POLY6 * pow(SQUARED_KERNEL_RADIUS - sqrDist, 3);
+					double temp = SQUARED_KERNEL_RADIUS - sqrDist;
+					p->density += temp * temp * temp; //optimization : not using pow
 				}
 			}
 		}
+		p->density *= PARTICLE_MASS * POLY6; //optimization
 		p->pressure = GAS_CONSTANT * (p->density - REST_DENSITY);
 	}
 }
