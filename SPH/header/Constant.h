@@ -30,8 +30,8 @@
 //kernel
 #define PI 3.14159265359
 #define POLY6 (315 / (64 * PI * pow(KERNEL_RADIUS, 9)))
-#define SPIKY (15 / (PI * pow(KERNEL_RADIUS, 6)))
-#define VISCO (15 / (2 * PI * pow(KERNEL_RADIUS, 3)))
+#define SPIKY_GRAD (-45 / (PI * pow(KERNEL_RADIUS, 6))) //spiky gradient = -45 / (pi.h^6) * (h-r)^2
+#define VISCO_LAPL (45 / (PI * pow(KERNEL_RADIUS, 6))) //viso laplacian = 45 / (pi.h^6) * (h-r)
 
 //kernel radius
 #define KERNEL_RADIUS 1.0
