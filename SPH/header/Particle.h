@@ -31,7 +31,7 @@ public:
 
 	~Particle();
 
-	vec3 reCalculateGridCell();//need to call on position change
+	ivec3 reCalculateGridCell();//need to call on position change
 
 	void printDebug();
 
@@ -45,8 +45,8 @@ public:
 	vec3 acceleration;
 	vec3 prevAcceleration;//for leapfrog
 	
-	double density;
-	double pressure;
+	float density;
+	float pressure;
 };
 
 #endif

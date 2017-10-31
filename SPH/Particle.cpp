@@ -7,7 +7,7 @@ Particle::~Particle()
 {
 }
 
-vec3 Particle::reCalculateGridCell() {
+ivec3 Particle::reCalculateGridCell() {
 	cellPosition = ivec3((position.x + OFFSET_X) / KERNEL_RADIUS, (position.y + OFFSET_Y) / KERNEL_RADIUS, (position.z + OFFSET_Z) / KERNEL_RADIUS);
 	return cellPosition;
 }

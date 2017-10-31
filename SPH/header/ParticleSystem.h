@@ -32,6 +32,7 @@ public:
 private:
 	void populateNeighborGrid();
 	void calcDensityPressure();
+	void calcForces();
 
 private: 
 	ivec3 cellCount;

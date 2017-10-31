@@ -85,38 +85,38 @@ void CreateParticleSystem() {
 }
 
 //create a container of -10 10 in x, -5, 5 in y, -5,5 in z
-void drawContainer(double boxX, double boxY, double boxZ) {
+void drawContainer(float boxX, float boxY, float boxZ) {
 	glLineWidth(2.0f); 
 	glColor3f(1.0f, 0.0f, 0.0f);
 
 	glBegin(GL_LINES);
-	glVertex3d(-boxX, boxY, boxZ);
-	glVertex3d(boxX, boxY, boxZ);
-	glVertex3d(-boxX, -boxY, boxZ);
-	glVertex3d(-boxX, boxY, boxZ);
-	glVertex3d(boxX, -boxY, boxZ);
-	glVertex3d(boxX, boxY, boxZ);
-	glVertex3d(-boxX, -boxY, boxZ);
-	glVertex3d(boxX, -boxY, boxZ);
+	glVertex3f(-boxX, boxY, boxZ);
+	glVertex3f(boxX, boxY, boxZ);
+	glVertex3f(-boxX, -boxY, boxZ);
+	glVertex3f(-boxX, boxY, boxZ);
+	glVertex3f(boxX, -boxY, boxZ);
+	glVertex3f(boxX, boxY, boxZ);
+	glVertex3f(-boxX, -boxY, boxZ);
+	glVertex3f(boxX, -boxY, boxZ);
 
-	glVertex3d(-boxX, boxY, -boxZ);
-	glVertex3d(boxX, boxY, -boxZ);
-	glVertex3d(-boxX, -boxY, -boxZ);
-	glVertex3d(-boxX, boxY, -boxZ);
-	glVertex3d(boxX, -boxY, -boxZ);
-	glVertex3d(boxX, boxY, -boxZ);
-	glVertex3d(-boxX, -boxY, -boxZ);
-	glVertex3d(boxX, -boxY, -boxZ);
+	glVertex3f(-boxX, boxY, -boxZ);
+	glVertex3f(boxX, boxY, -boxZ);
+	glVertex3f(-boxX, -boxY, -boxZ);
+	glVertex3f(-boxX, boxY, -boxZ);
+	glVertex3f(boxX, -boxY, -boxZ);
+	glVertex3f(boxX, boxY, -boxZ);
+	glVertex3f(-boxX, -boxY, -boxZ);
+	glVertex3f(boxX, -boxY, -boxZ);
 
-	glVertex3d(-boxX, -boxY, boxZ);
-	glVertex3d(-boxX, -boxY, -boxZ);
-	glVertex3d(-boxX, boxY, boxZ);
-	glVertex3d(-boxX, boxY, -boxZ);
+	glVertex3f(-boxX, -boxY, boxZ);
+	glVertex3f(-boxX, -boxY, -boxZ);
+	glVertex3f(-boxX, boxY, boxZ);
+	glVertex3f(-boxX, boxY, -boxZ);
 
-	glVertex3d(boxX, -boxY, boxZ);
-	glVertex3d(boxX, -boxY, -boxZ);
-	glVertex3d(boxX, boxY, boxZ);
-	glVertex3d(boxX, boxY, -boxZ);
+	glVertex3f(boxX, -boxY, boxZ);
+	glVertex3f(boxX, -boxY, -boxZ);
+	glVertex3f(boxX, boxY, boxZ);
+	glVertex3f(boxX, boxY, -boxZ);
 	glEnd();
 }
 
