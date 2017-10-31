@@ -8,15 +8,15 @@
 unique_ptr<ParticleSystem> pSystem;
 
 // angle of rotation for the camera direction
-float angle = 0.0f;
+double angle = 0.0;
 // actual vector representing the camera's direction
-float lx = 0.0f, lz = -1.0f;
+double lx = 0.0, lz = -1.0;
 // XZ position of the camera
-float x = 0.0f, z = 0.0f;
+double x = 0.0, z = 0.0;
 // the key states. These variables will be zero
 //when no key is being presses
-float deltaAngle = 0.0f;
-float deltaMove = 0;
+double deltaAngle = 0.0;
+double deltaMove = 0;
 int xOrigin = -1;
 
 //
@@ -28,7 +28,7 @@ void reshape(int w, int h)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	gluPerspective(45.0, float(w) / float(h), 0.001, 100.0);
+	gluPerspective(45.0, double(w) / double(h), 0.001, 100.0);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -85,42 +85,42 @@ void CreateParticleSystem() {
 }
 
 //create a container of -10 10 in x, -5, 5 in y, -5,5 in z
-void drawContainer(float boxX, float boxY, float boxZ) {
+void drawContainer(double boxX, double boxY, double boxZ) {
 	glLineWidth(2.0f); 
 	glColor3f(1.0f, 0.0f, 0.0f);
 
 	glBegin(GL_LINES);
-	glVertex3f(-boxX, boxY, boxZ);
-	glVertex3f(boxX, boxY, boxZ);
-	glVertex3f(-boxX, -boxY, boxZ);
-	glVertex3f(-boxX, boxY, boxZ);
-	glVertex3f(boxX, -boxY, boxZ);
-	glVertex3f(boxX, boxY, boxZ);
-	glVertex3f(-boxX, -boxY, boxZ);
-	glVertex3f(boxX, -boxY, boxZ);
+	glVertex3d(-boxX, boxY, boxZ);
+	glVertex3d(boxX, boxY, boxZ);
+	glVertex3d(-boxX, -boxY, boxZ);
+	glVertex3d(-boxX, boxY, boxZ);
+	glVertex3d(boxX, -boxY, boxZ);
+	glVertex3d(boxX, boxY, boxZ);
+	glVertex3d(-boxX, -boxY, boxZ);
+	glVertex3d(boxX, -boxY, boxZ);
 
-	glVertex3f(-boxX, boxY, -boxZ);
-	glVertex3f(boxX, boxY, -boxZ);
-	glVertex3f(-boxX, -boxY, -boxZ);
-	glVertex3f(-boxX, boxY, -boxZ);
-	glVertex3f(boxX, -boxY, -boxZ);
-	glVertex3f(boxX, boxY, -boxZ);
-	glVertex3f(-boxX, -boxY, -boxZ);
-	glVertex3f(boxX, -boxY, -boxZ);
+	glVertex3d(-boxX, boxY, -boxZ);
+	glVertex3d(boxX, boxY, -boxZ);
+	glVertex3d(-boxX, -boxY, -boxZ);
+	glVertex3d(-boxX, boxY, -boxZ);
+	glVertex3d(boxX, -boxY, -boxZ);
+	glVertex3d(boxX, boxY, -boxZ);
+	glVertex3d(-boxX, -boxY, -boxZ);
+	glVertex3d(boxX, -boxY, -boxZ);
 
-	glVertex3f(-boxX, -boxY, boxZ);
-	glVertex3f(-boxX, -boxY, -boxZ);
-	glVertex3f(-boxX, boxY, boxZ);
-	glVertex3f(-boxX, boxY, -boxZ);
+	glVertex3d(-boxX, -boxY, boxZ);
+	glVertex3d(-boxX, -boxY, -boxZ);
+	glVertex3d(-boxX, boxY, boxZ);
+	glVertex3d(-boxX, boxY, -boxZ);
 
-	glVertex3f(boxX, -boxY, boxZ);
-	glVertex3f(boxX, -boxY, -boxZ);
-	glVertex3f(boxX, boxY, boxZ);
-	glVertex3f(boxX, boxY, -boxZ);
+	glVertex3d(boxX, -boxY, boxZ);
+	glVertex3d(boxX, -boxY, -boxZ);
+	glVertex3d(boxX, boxY, boxZ);
+	glVertex3d(boxX, boxY, -boxZ);
 	glEnd();
 }
 
-void computePos(float deltaMove) {
+void computePos(double deltaMove) {
 
 	x += deltaMove * lx * 0.1f;
 	z += deltaMove * lz * 0.1f;

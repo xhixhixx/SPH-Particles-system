@@ -17,24 +17,24 @@ ParticleSystem::~ParticleSystem()
 
 void ParticleSystem::createParticleSystem()
 {
-	float widthX = xCnt * INIT_PARTICLE_DISTANCE;
-	float widthY = yCnt * INIT_PARTICLE_DISTANCE;
-	float widthZ = zCnt * INIT_PARTICLE_DISTANCE;
+	double widthX = xCnt * INIT_PARTICLE_DISTANCE;
+	double widthY = yCnt * INIT_PARTICLE_DISTANCE;
+	double widthZ = zCnt * INIT_PARTICLE_DISTANCE;
 	
 	int id = 1;
 	for (int i = 0; i < xCnt; ++i) {
 		for (int j = 0; j < yCnt; ++j) {
 			for (int k = 0; k < zCnt; ++k) {
-				vec3 pos(- widthX / 2 + i * INIT_PARTICLE_DISTANCE, - widthY / 2 + j * INIT_PARTICLE_DISTANCE, - widthZ / 2 + k * INIT_PARTICLE_DISTANCE);
+				dvec3 pos(- widthX / 2 + i * INIT_PARTICLE_DISTANCE, - widthY / 2 + j * INIT_PARTICLE_DISTANCE, - widthZ / 2 + k * INIT_PARTICLE_DISTANCE);
 				particles.emplace_back(make_shared<Particle>(pos, id++));
 			}
 		}
 	}
 
 	//initialize neighbor grid
-	int xCell = int(BOX_SIZE_X / KERNEL_RADIUS);
-	int yCell = int(BOX_SIZE_Y / KERNEL_RADIUS);
-	int zCell = int(BOX_SIZE_Z / KERNEL_RADIUS);
+	int xCell = int(ceil(BOX_SIZE_X / KERNEL_RADIUS));
+	int yCell = int(ceil(BOX_SIZE_Y / KERNEL_RADIUS));
+	int zCell = int(ceil(BOX_SIZE_Z / KERNEL_RADIUS));
 	//
 	cellCount = ivec3(xCell, yCell, zCell);
 	grid.resize(xCell, vector<vector<unordered_map<shared_ptr<Particle>, int>>>(yCell, vector<unordered_map<shared_ptr<Particle>, int>>(zCell, unordered_map<shared_ptr<Particle>, int>())));
@@ -49,10 +49,10 @@ void ParticleSystem::update() {
 	//update acceleration and position
 	//for all particle
 	for (auto p : particles) {
-		p->acceleration += GRAVITY;
+		//p->acceleration += GRAVITY;
 		//Leap frog iteration
-		p->position += p->velocity * TIMESTEP + p->prevAcceleration * (0.5f * TIMESTEP * TIMESTEP);
-		p->velocity += (p->acceleration + p->prevAcceleration) * (0.5f * TIMESTEP);
+		p->position += p->velocity * TIMESTEP + (p->prevAcceleration + GRAVITY) * (0.5 * TIMESTEP * TIMESTEP);
+		p->velocity += (p->acceleration + GRAVITY + p->prevAcceleration + GRAVITY) * (0.5 * TIMESTEP);
 		p->prevAcceleration = p->acceleration;
 		//colision with container
 		bool negate = false;
@@ -144,12 +144,12 @@ void ParticleSystem::calcDensityPressure() {
 		//for each possible neighbor in cells
 		for (auto cellPos : nCells) {
 			for (auto np : grid[cellPos.x][cellPos.y][cellPos.z]) {
-				float sqrDist = 0.0; //itself
+				double sqrDist = 0.0; //itself
 				if (p->id != np.first->id) {
 					sqrDist = glm::distance2(p->position, np.first->position);
 				}
 				if (sqrDist > SQUARED_KERNEL_RADIUS) continue; //not neighbor
-				float temp = SQUARED_KERNEL_RADIUS - sqrDist;
+				double temp = SQUARED_KERNEL_RADIUS - sqrDist;
 				p->density += temp * temp * temp; //optimization : not using pow
 			}
 		}
@@ -163,32 +163,31 @@ void ParticleSystem::calcForces() {
 		//find neighbors cell
 		vector<ivec3> nCells = getNeighborCells(p->id);
 		//for each possible neighbor in cells
-		vec3 totalPressureForce = vec3(0.0f);
-		vec3 totalViscoForce = vec3(0.0f);
+		dvec3 totalPressureForce = dvec3(0.0f);
+		dvec3 totalViscoForce = dvec3(0.0f);
 		for (auto cellPos : nCells) {
 			for (auto np : grid[cellPos.x][cellPos.y][cellPos.z]) {
 				if (p->id == np.first->id) { //itself
 					continue;
 				}
-				float dist = glm::distance(p->position, np.first->position);
+				double dist = glm::distance(p->position, np.first->position);
 				if (dist > KERNEL_RADIUS) continue; //not neighbor
-				float temp = KERNEL_RADIUS - dist;
+				double temp = KERNEL_RADIUS - dist;
 				//////////////////////////
 				//pressure forces
 				//////////////////////////
-				float forcePressure = -(p->pressure + np.first->pressure) / np.first->density * temp * temp * SPIKY_GRAD;
-				//pressure move particle i further from particle j
-				vec3 accDir = vec3(p->position - np.first->position) / dist;//normalized direction
-				totalPressureForce += forcePressure * accDir;
+				double forcePressure = -(p->pressure + np.first->pressure) / np.first->density * temp * temp * SPIKY_GRAD;
 
-				vec3 debug = totalPressureForce / p->density;
+				//pressure move particle i further from particle j
+				dvec3 accDir = (p->position - np.first->position) / dist;//normalized direction
+				totalPressureForce += forcePressure * accDir;
 				//////////////////////////
 				//viscosity forces
 				//////////////////////////
-				totalViscoForce += (np.first->velocity - p->velocity) / np.first->density * VISCO_LAPL * temp;
+				//totalViscoForce += (np.first->velocity - p->velocity) / np.first->density * VISCO_LAPL * temp;
 			}
 		}
 		//a = f / density
-		p->acceleration += (totalPressureForce + totalPressureForce) / p->density;
+		p->acceleration += totalPressureForce / p->density;
 	}
 }
