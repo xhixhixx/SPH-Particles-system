@@ -2,6 +2,7 @@
 #include "header/Constant.h"
 #include <iostream>
 #include <glm\gtx\norm.hpp>
+#include <algorithm>
 
 vector<vector<int>> DIRECTION3D = { { 1, 0, 0 },{ -1, 0, 0 },{ 0, 1, 0 },{ 0, -1, 0 },{ 0, 0, 1 },{ 0, 0, -1 },
 									{ 1, 1, 0 },{ 1, -1, 0 },{-1, 1, 0 },{ -1, -1, 0 },
@@ -48,8 +49,6 @@ void ParticleSystem::update() {
 	//update acceleration and position
 	//for all particle
 	for (auto p : particles) {
-		if (p->id != PARTICLE_IN_FOCUS) 
-			continue;
 		p->acceleration += GRAVITY;
 		//Leap frog iteration
 		p->position += p->velocity * TIMESTEP + p->prevAcceleration * (0.5f * TIMESTEP * TIMESTEP);
@@ -92,6 +91,10 @@ void ParticleSystem::update() {
 		ivec3 oldCell = p->cellPosition;
 		if (oldCell != p->reCalculateGridCell()) { //cell change, update grid
 			grid[oldCell.x][oldCell.y][oldCell.z].erase(p);
+			//cap cell
+			p->cellPosition.x = max(min(cellCount.x - 1, p->cellPosition.x), 0);
+			p->cellPosition.y = max(min(cellCount.y - 1, p->cellPosition.y), 0);
+			p->cellPosition.z = max(min(cellCount.z - 1, p->cellPosition.z), 0);
 			grid[p->cellPosition.x][p->cellPosition.y][p->cellPosition.z][p] = 1;
 		}
 	}
@@ -160,7 +163,8 @@ void ParticleSystem::calcForces() {
 		//find neighbors cell
 		vector<ivec3> nCells = getNeighborCells(p->id);
 		//for each possible neighbor in cells
-		vec3 totalPressureForce = vec3(0.0);
+		vec3 totalPressureForce = vec3(0.0f);
+		vec3 totalViscoForce = vec3(0.0f);
 		for (auto cellPos : nCells) {
 			for (auto np : grid[cellPos.x][cellPos.y][cellPos.z]) {
 				if (p->id == np.first->id) { //itself
@@ -169,13 +173,22 @@ void ParticleSystem::calcForces() {
 				float dist = glm::distance(p->position, np.first->position);
 				if (dist > KERNEL_RADIUS) continue; //not neighbor
 				float temp = KERNEL_RADIUS - dist;
+				//////////////////////////
+				//pressure forces
+				//////////////////////////
 				float forcePressure = -(p->pressure + np.first->pressure) / np.first->density * temp * temp * SPIKY_GRAD;
 				//pressure move particle i further from particle j
 				vec3 accDir = vec3(p->position - np.first->position) / dist;//normalized direction
 				totalPressureForce += forcePressure * accDir;
+
+				vec3 debug = totalPressureForce / p->density;
+				//////////////////////////
+				//viscosity forces
+				//////////////////////////
+				totalViscoForce += (np.first->velocity - p->velocity) / np.first->density * VISCO_LAPL * temp;
 			}
 		}
 		//a = f / density
-		p->acceleration += totalPressureForce / p->density;
+		p->acceleration += (totalPressureForce + totalPressureForce) / p->density;
 	}
 }
