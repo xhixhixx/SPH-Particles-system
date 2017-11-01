@@ -31,7 +31,7 @@
 //kernel radius
 #define KERNEL_RADIUS 0.03
 #define SQUARED_KERNEL_RADIUS (KERNEL_RADIUS * KERNEL_RADIUS)
-#define CELL_SIZE (KERNEL_RADIUS + 0.1)
+#define CELL_SIZE (KERNEL_RADIUS * 1.1)
 
 #define MAX_VELOCITY (KERNEL_RADIUS / TIMESTEP) //we do not want the particle to move further than 1 radius per timestep
 
