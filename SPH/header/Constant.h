@@ -5,32 +5,35 @@
 #define WINDOW_HEIGHT 720
 
 //container size
-#define BOX_SIZE_X 20
-#define BOX_SIZE_Y 10
-#define BOX_SIZE_Z 10
-#define OFFSET_X (BOX_SIZE_X / 2)
-#define OFFSET_Y (BOX_SIZE_Y / 2)
-#define OFFSET_Z (BOX_SIZE_Z / 2)
+#define BOX_SIZE_X 1.0
+#define BOX_SIZE_Y 1.0
+#define BOX_SIZE_Z 1.0
+#define OFFSET_X (BOX_SIZE_X / 2.0)
+#define OFFSET_Y (BOX_SIZE_Y / 2.0)
+#define OFFSET_Z (BOX_SIZE_Z / 2.0)
 
 //num particle
 #define NUM_PARTICLE_X 10
 #define NUM_PARTICLE_Y 10
 #define NUM_PARTICLE_Z 10
-#define INIT_PARTICLE_DISTANCE 0.2
-#define PARTICLE_SIZE 2.0f
+#define INIT_PARTICLE_DISTANCE 0.02
+#define PARTICLE_SIZE 5.0f
 
 //world
-#define TIMESTEP 0.001 //second
+#define TIMESTEP 0.003 //second
 #define GRAVITY dvec3(0.0, -9.8, 0.0)
-#define PARTICLE_MASS 0.01 //kg
-#define COLLISION_DAMPING 0.5;
+#define PARTICLE_MASS 0.02 //kg
+#define COLLISION_DAMPING 0.6;
 #define GAS_CONSTANT 1.0
 #define REST_DENSITY 1000.0 //kg/m^3
 #define VISCOSITY 1.0 //kg/m/s
 
 //kernel radius
-#define KERNEL_RADIUS 0.5
+#define KERNEL_RADIUS 0.04
 #define SQUARED_KERNEL_RADIUS (KERNEL_RADIUS * KERNEL_RADIUS)
+#define CELL_SIZE (KERNEL_RADIUS + 0.1)
+
+#define MAX_VELOCITY (KERNEL_RADIUS / TIMESTEP) //we do not want the particle to move further than 1 radius per timestep
 
 //kernel
 #define PI 3.14159265359
@@ -39,7 +42,7 @@
 #define VISCO_LAPL (VISCOSITY * PARTICLE_MASS * 45.0 / (PI * pow(KERNEL_RADIUS, 6))) //viso laplacian = 45 / (pi.h^6) * (h-r) -- VISCO * MASS is pre-calc
 
 //DEBUG
-#define PARTICLE_IN_FOCUS 900
+#define PARTICLE_IN_FOCUS 100
 
 
 #endif

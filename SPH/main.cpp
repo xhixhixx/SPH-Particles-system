@@ -22,6 +22,10 @@ int xOrigin = -1;
 //
 int particleIdInFocus = PARTICLE_IN_FOCUS;
 
+#define CAMERA_MOVEBACK_X 0.0f
+#define CAMERA_MOVEBACK_Y 1.0f
+#define CAMERA_MOVEBACK_Z -2.0f
+
 void reshape(int w, int h)
 {
 	glViewport(0, 0, w, h);
@@ -33,7 +37,7 @@ void reshape(int w, int h)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	//move the camera back
-	glTranslatef(0.0f, 0.0f, -30.0f);
+	glTranslatef(CAMERA_MOVEBACK_X, CAMERA_MOVEBACK_Y, CAMERA_MOVEBACK_Z);
 }
 
 void SetNormalParticleColor() {
@@ -137,7 +141,7 @@ void display()
 	// Reset transformations
 	glLoadIdentity();
 	// Set the camera
-	glTranslatef(0.0f, 0.0f, -30.0f);
+	glTranslatef(CAMERA_MOVEBACK_X, CAMERA_MOVEBACK_Y, CAMERA_MOVEBACK_Z);
 	gluLookAt(x, 1.0f, z,
 		x + lx, 1.0f, z + lz,
 		0.0f, 1.0f, 0.0f);
@@ -208,6 +212,7 @@ int main(int argc, char* argv[]) {
 	CreateParticleSystem();
 	//display func
 	glEnable(GL_DEPTH_TEST);
+
 	glutReshapeFunc(reshape);
 	glutDisplayFunc(display);
 	glutIdleFunc(display);

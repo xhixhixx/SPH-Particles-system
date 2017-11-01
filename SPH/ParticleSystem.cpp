@@ -32,9 +32,9 @@ void ParticleSystem::createParticleSystem()
 	}
 
 	//initialize neighbor grid
-	int xCell = int(ceil(BOX_SIZE_X / KERNEL_RADIUS));
-	int yCell = int(ceil(BOX_SIZE_Y / KERNEL_RADIUS));
-	int zCell = int(ceil(BOX_SIZE_Z / KERNEL_RADIUS));
+	int xCell = int(ceil(BOX_SIZE_X / CELL_SIZE));
+	int yCell = int(ceil(BOX_SIZE_Y / CELL_SIZE));
+	int zCell = int(ceil(BOX_SIZE_Z / CELL_SIZE));
 	//
 	cellCount = ivec3(xCell, yCell, zCell);
 	grid.resize(xCell, vector<vector<unordered_map<shared_ptr<Particle>, int>>>(yCell, vector<unordered_map<shared_ptr<Particle>, int>>(zCell, unordered_map<shared_ptr<Particle>, int>())));
@@ -53,37 +53,50 @@ void ParticleSystem::update() {
 		//Leap frog iteration
 		p->position += p->velocity * TIMESTEP + (p->prevAcceleration + GRAVITY) * (0.5 * TIMESTEP * TIMESTEP);
 		p->velocity += (p->acceleration + GRAVITY + p->prevAcceleration + GRAVITY) * (0.5 * TIMESTEP);
-		p->prevAcceleration = p->acceleration;
-		//colision with container
-		bool negate = false;
-		if (p->position.x <= -OFFSET_X) {
-			p->position.x = -OFFSET_X;
-			negate = true;
-		}
-		else if (p->position.x >= OFFSET_X) {
-			p->position.x = OFFSET_X;
-			negate = true;
-		}
-		if (p->position.y <= -OFFSET_Y) {
-			p->position.y = -OFFSET_Y;
-			negate = true;
-		}
-		else if (p->position.y >= OFFSET_Y) {
-			p->position.y = OFFSET_Y;
-			negate = true;
-		}
-		if (p->position.z <= -OFFSET_Z) {
-			p->position.z = -OFFSET_Z;
-			negate = true;
-		}
-		else if (p->position.z >= OFFSET_Z) {
-			p->position.z = OFFSET_Z;
-			negate = true;
-		}
-		if (negate) {
-			p->velocity = -p->velocity * COLLISION_DAMPING;
-		}
 
+		double temp = glm::length2(p->velocity);
+		if (temp > MAX_VELOCITY) {
+			p->velocity *= sqrt(MAX_VELOCITY / temp);
+		}
+		p->prevAcceleration = p->acceleration;
+
+		//colision with container
+		bool negateX = false;
+		bool negateY = false;
+		bool negateZ = false;
+		if (p->position.x < -OFFSET_X) {
+			p->position.x = -OFFSET_X;
+			negateX = true;
+		}
+		else if (p->position.x > OFFSET_X) {
+			p->position.x = OFFSET_X;
+			negateX = true;
+		}
+		if (p->position.y < -OFFSET_Y) {
+			p->position.y = -OFFSET_Y;
+			negateY = true;
+		}
+		else if (p->position.y > OFFSET_Y) {
+			p->position.y = OFFSET_Y;
+			negateY = true;
+		}
+		if (p->position.z < -OFFSET_Z) {
+			p->position.z = -OFFSET_Z;
+			negateZ = true;
+		}
+		else if (p->position.z > OFFSET_Z) {
+			p->position.z = OFFSET_Z;
+			negateZ = true;
+		}
+		if (negateX) {
+			p->velocity.x = -p->velocity.x * COLLISION_DAMPING;
+		}
+		if (negateY) {
+			p->velocity.y = -p->velocity.y * COLLISION_DAMPING;
+		}
+		if (negateZ) {
+			p->velocity.z = -p->velocity.z * COLLISION_DAMPING;
+		}
 		////////////////////////////
 		// position change 
 		// Need to update neighbor
@@ -150,10 +163,10 @@ void ParticleSystem::calcDensityPressure() {
 				}
 				if (sqrDist > SQUARED_KERNEL_RADIUS) continue; //not neighbor
 				double temp = SQUARED_KERNEL_RADIUS - sqrDist;
-				p->density += temp * temp * temp; //optimization : not using pow
+				p->density += PARTICLE_MASS * POLY6 * temp * temp * temp; //optimization : not using pow
 			}
 		}
-		p->density *= PARTICLE_MASS * POLY6; //optimization
+		//p->density *= PARTICLE_MASS * POLY6; //optimization
 		p->pressure = GAS_CONSTANT * (p->density - REST_DENSITY);
 	}
 }
@@ -165,13 +178,14 @@ void ParticleSystem::calcForces() {
 		//for each possible neighbor in cells
 		dvec3 totalPressureForce = dvec3(0.0f);
 		dvec3 totalViscoForce = dvec3(0.0f);
+		p->acceleration = dvec3(0.0);
 		for (auto cellPos : nCells) {
 			for (auto np : grid[cellPos.x][cellPos.y][cellPos.z]) {
 				if (p->id == np.first->id) { //itself
 					continue;
 				}
 				double dist = glm::distance(p->position, np.first->position);
-				if (dist > KERNEL_RADIUS) continue; //not neighbor
+				if (dist >= KERNEL_RADIUS) continue; //not neighbor
 				double temp = KERNEL_RADIUS - dist;
 				//////////////////////////
 				//pressure forces
@@ -181,13 +195,19 @@ void ParticleSystem::calcForces() {
 				//pressure move particle i further from particle j
 				dvec3 accDir = (p->position - np.first->position) / dist;//normalized direction
 				totalPressureForce += forcePressure * accDir;
+
+				//p->acceleration += forcePressure * accDir / p->density;
 				//////////////////////////
 				//viscosity forces
 				//////////////////////////
-				//totalViscoForce += (np.first->velocity - p->velocity) / np.first->density * VISCO_LAPL * temp;
+				totalViscoForce += (np.first->velocity - p->velocity) / np.first->density * VISCO_LAPL * temp;
 			}
 		}
 		//a = f / density
-		p->acceleration += totalPressureForce / p->density;
+		dvec3 temp2 = totalPressureForce / p->density;
+		if (glm::any(glm::isnan(temp2))) {
+			continue;
+		}
+		p->acceleration += temp2;
 	}
 }
