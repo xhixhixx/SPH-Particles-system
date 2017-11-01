@@ -195,8 +195,6 @@ void ParticleSystem::calcForces() {
 				//pressure move particle i further from particle j
 				dvec3 accDir = (p->position - np.first->position) / dist;//normalized direction
 				totalPressureForce += forcePressure * accDir;
-
-				//p->acceleration += forcePressure * accDir / p->density;
 				//////////////////////////
 				//viscosity forces
 				//////////////////////////
@@ -204,8 +202,8 @@ void ParticleSystem::calcForces() {
 			}
 		}
 		//a = f / density
-		dvec3 temp2 = totalPressureForce / p->density;
-		if (glm::any(glm::isnan(temp2))) {
+		dvec3 temp2 = (totalPressureForce + totalViscoForce) / p->density;
+		if (glm::any(glm::isnan(temp2))) {//numerical error
 			continue;
 		}
 		p->acceleration += temp2;

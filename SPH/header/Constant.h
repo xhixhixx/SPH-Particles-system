@@ -17,19 +17,19 @@
 #define NUM_PARTICLE_Y 10
 #define NUM_PARTICLE_Z 10
 #define INIT_PARTICLE_DISTANCE 0.02
-#define PARTICLE_SIZE 5.0f
+#define PARTICLE_SIZE 6.0f
 
 //world
 #define TIMESTEP 0.003 //second
 #define GRAVITY dvec3(0.0, -9.8, 0.0)
-#define PARTICLE_MASS 0.02 //kg
+#define PARTICLE_MASS 0.01 //kg
 #define COLLISION_DAMPING 0.6;
-#define GAS_CONSTANT 1.0
-#define REST_DENSITY 1000.0 //kg/m^3
+#define GAS_CONSTANT 0.50
+#define REST_DENSITY 500.0 //kg/m^3
 #define VISCOSITY 1.0 //kg/m/s
 
 //kernel radius
-#define KERNEL_RADIUS 0.04
+#define KERNEL_RADIUS 0.05
 #define SQUARED_KERNEL_RADIUS (KERNEL_RADIUS * KERNEL_RADIUS)
 #define CELL_SIZE (KERNEL_RADIUS + 0.1)
 
