@@ -25,11 +25,11 @@
 #define PARTICLE_MASS 0.01 //kg
 #define COLLISION_DAMPING 0.6;
 #define GAS_CONSTANT 0.50
-#define REST_DENSITY 500.0 //kg/m^3
+#define REST_DENSITY 1000.0 //kg/m^3
 #define VISCOSITY 1.0 //kg/m/s
 
 //kernel radius
-#define KERNEL_RADIUS 0.05
+#define KERNEL_RADIUS 0.03
 #define SQUARED_KERNEL_RADIUS (KERNEL_RADIUS * KERNEL_RADIUS)
 #define CELL_SIZE (KERNEL_RADIUS + 0.1)
 

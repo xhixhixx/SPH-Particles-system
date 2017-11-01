@@ -17,7 +17,7 @@ ParticleSystem::~ParticleSystem()
 
 void ParticleSystem::createParticleSystem()
 {
-	double widthX = xCnt * INIT_PARTICLE_DISTANCE;
+	double widthX = xCnt * INIT_PARTICLE_DISTANCE - 0.5 * BOX_SIZE_X;
 	double widthY = yCnt * INIT_PARTICLE_DISTANCE;
 	double widthZ = zCnt * INIT_PARTICLE_DISTANCE;
 	
@@ -161,12 +161,12 @@ void ParticleSystem::calcDensityPressure() {
 				if (p->id != np.first->id) {
 					sqrDist = glm::distance2(p->position, np.first->position);
 				}
-				if (sqrDist > SQUARED_KERNEL_RADIUS) continue; //not neighbor
+				if (sqrDist >= SQUARED_KERNEL_RADIUS) continue; //not neighbor
 				double temp = SQUARED_KERNEL_RADIUS - sqrDist;
-				p->density += PARTICLE_MASS * POLY6 * temp * temp * temp; //optimization : not using pow
+				p->density += temp * temp * temp; //optimization : not using pow
 			}
 		}
-		//p->density *= PARTICLE_MASS * POLY6; //optimization
+		p->density *= PARTICLE_MASS * POLY6; //optimization
 		p->pressure = GAS_CONSTANT * (p->density - REST_DENSITY);
 	}
 }
@@ -191,10 +191,10 @@ void ParticleSystem::calcForces() {
 				//pressure forces
 				//////////////////////////
 				double forcePressure = -(p->pressure + np.first->pressure) / np.first->density * temp * temp * SPIKY_GRAD;
-
 				//pressure move particle i further from particle j
 				dvec3 accDir = (p->position - np.first->position) / dist;//normalized direction
 				totalPressureForce += forcePressure * accDir;
+
 				//////////////////////////
 				//viscosity forces
 				//////////////////////////
