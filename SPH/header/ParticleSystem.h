@@ -33,6 +33,12 @@ public:
 
 private:
 	void populateNeighborGrid();
+
+	void clearGridByThread(bool useThread = true);
+	void clearGridByIndex(int start, int end);
+
+	void calcCellPosByThread(bool useThread = true);
+	void calcCellPosByIndex(int start, int end);
 	
 	void calcDensityPressureByThead(bool useThread = true);
 	void calcDensityPressureByIndex(int start, int end);
@@ -40,11 +46,14 @@ private:
 	void calcForcesByThread(bool useThread = true);
 	void calcForcesByIndex(int start, int end);
 
+	void updatePositionByThread(bool useThread = true);
+	void updatePositionByIndex(int start, int end);
+
 private: 
 	ivec3 cellCount;
 	int xCnt, yCnt, zCnt;
 	vector<shared_ptr<Particle>> particles;
-	vector<vector<vector<unordered_map<shared_ptr<Particle>, int>>>> grid;
+	vector<vector<shared_ptr<Particle>>> grid;
 };
 
 #endif

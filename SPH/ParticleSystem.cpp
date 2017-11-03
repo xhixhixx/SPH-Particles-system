@@ -4,6 +4,9 @@
 #include <glm\gtx\norm.hpp>
 #include <algorithm>
 #include <thread>
+#include <mutex>
+
+mutex mtx;
 
 vector<vector<int>> DIRECTION3D = { { 1, 0, 0 },{ -1, 0, 0 },{ 0, 1, 0 },{ 0, -1, 0 },{ 0, 0, 1 },{ 0, 0, -1 },
 									{ 1, 1, 0 },{ 1, -1, 0 },{-1, 1, 0 },{ -1, -1, 0 },
@@ -18,7 +21,7 @@ ParticleSystem::~ParticleSystem()
 
 void ParticleSystem::createParticleSystem()
 {
-	double widthX = xCnt * INIT_PARTICLE_DISTANCE - 0.5 * BOX_SIZE_X;
+	double widthX = xCnt * INIT_PARTICLE_DISTANCE - 0.4 * BOX_SIZE_X;
 	double widthY = yCnt * INIT_PARTICLE_DISTANCE - 0.2 * BOX_SIZE_Y;
 	double widthZ = zCnt * INIT_PARTICLE_DISTANCE;
 	
@@ -38,7 +41,8 @@ void ParticleSystem::createParticleSystem()
 	int zCell = int(ceil(BOX_SIZE_Z / CELL_SIZE));
 	//
 	cellCount = ivec3(xCell, yCell, zCell);
-	grid.resize(xCell, vector<vector<unordered_map<shared_ptr<Particle>, int>>>(yCell, vector<unordered_map<shared_ptr<Particle>, int>>(zCell, unordered_map<shared_ptr<Particle>, int>())));
+	int temp = xCell * yCell * zCell;
+	grid.resize(temp, vector<shared_ptr<Particle>>());
 	populateNeighborGrid();
 }
 
@@ -46,10 +50,35 @@ void ParticleSystem::update() {
 	//update system
 	calcDensityPressureByThead(true);
 	calcForcesByThread(true);
-
 	//update acceleration and position
 	//for all particle
-	for (auto p : particles) {
+	updatePositionByThread(true);
+	////////////////////////////
+	// position change 
+	// Need to update neighbor
+	/////////////////////////////
+	populateNeighborGrid();
+}
+
+void ParticleSystem::updatePositionByThread(bool useThread) {
+	if (useThread) {
+		thread t[NUM_THREAD];
+		int gap = grid.size() / NUM_THREAD;
+		for (int i = 0; i < NUM_THREAD; ++i) { //for each thread
+			t[i] = thread(&ParticleSystem::updatePositionByIndex, this, i * gap, (i + 1) * gap - 1);
+		}
+		for (int i = 0; i < NUM_THREAD; ++i) { //for each thread
+			t[i].join();
+		}
+	}
+	else {
+		updatePositionByIndex(0, grid.size() - 1);
+	}
+}
+
+void ParticleSystem::updatePositionByIndex(int start, int end) {
+	for (int i = start; i <= end && i < particles.size(); ++i) {
+		shared_ptr<Particle> p = particles[i];
 		//p->acceleration += GRAVITY;
 		//Leap frog iteration
 		p->position += p->velocity * TIMESTEP + (p->prevAcceleration + GRAVITY) * (0.5 * TIMESTEP * TIMESTEP);
@@ -95,19 +124,6 @@ void ParticleSystem::update() {
 		if (negateZ) {
 			p->velocity.z = -p->velocity.z * COLLISION_DAMPING;
 		}
-		////////////////////////////
-		// position change 
-		// Need to update neighbor
-		/////////////////////////////
-		ivec3 oldCell = p->cellPosition;
-		if (oldCell != p->reCalculateGridCell()) { //cell change, update grid
-			grid[oldCell.x][oldCell.y][oldCell.z].erase(p);
-			//cap cell
-			p->cellPosition.x = max(min(cellCount.x - 1, p->cellPosition.x), 0);
-			p->cellPosition.y = max(min(cellCount.y - 1, p->cellPosition.y), 0);
-			p->cellPosition.z = max(min(cellCount.z - 1, p->cellPosition.z), 0);
-			grid[p->cellPosition.x][p->cellPosition.y][p->cellPosition.z][p] = 1;
-		}
 	}
 }
 
@@ -140,10 +156,59 @@ bool ParticleSystem::checkIsNeighbor(int pId1, int pId2) const {
 }
 
 void ParticleSystem::populateNeighborGrid() {
-	for (unsigned int i = 0; i < particles.size(); ++i) {
-		ivec3 cell = particles[i]->cellPosition;
-		grid[cell.x][cell.y][cell.z][particles[i]] = 1;
-		//particles[i]->printDebug();
+	//clear previous
+	fill(grid.begin(), grid.end(), vector<shared_ptr<Particle>>());
+	
+	//repopulate
+	calcCellPosByThread(true);
+}
+
+void ParticleSystem::clearGridByThread(bool useThread) {
+	if (useThread) {
+		thread t[NUM_THREAD];
+		int gap = grid.size() / NUM_THREAD;
+		for (int i = 0; i < NUM_THREAD; ++i) { //for each thread
+			t[i] = thread(&ParticleSystem::clearGridByIndex, this, i * gap, (i + 1) * gap - 1);
+		}
+		for (int i = 0; i < NUM_THREAD; ++i) { //for each thread
+			t[i].join();
+		}
+	}
+	else {
+		clearGridByIndex(0, grid.size() - 1);
+	}
+}
+
+void ParticleSystem::clearGridByIndex(int start, int end) {
+	for (unsigned int i = start; i <= end && i < grid.size(); ++i) {
+		grid[i].clear();
+	}
+}
+
+void ParticleSystem::calcCellPosByThread(bool useThread) {
+	if (useThread) {
+		thread t[NUM_THREAD];
+		int gap = particles.size() / NUM_THREAD;
+		for (int i = 0; i < NUM_THREAD; ++i) { //for each thread
+			t[i] = thread(&ParticleSystem::calcCellPosByIndex, this, i * gap, (i + 1) * gap - 1);
+		}
+		for (int i = 0; i < NUM_THREAD; ++i) { //for each thread
+			t[i].join();
+		}
+	}
+	else {
+		calcCellPosByIndex(0, particles.size() - 1);
+	}
+}
+
+void ParticleSystem::calcCellPosByIndex(int start, int end) {
+	for (int i = start; i <= end && i < particles.size(); ++i) { //for each particle
+		ivec3 cell = particles[i]->reCalculateGridCell();
+		//lock
+		//vector is not thread safe
+		mtx.lock();
+		grid[cell.x + cellCount.x * (cell.y + cellCount.y * cell.z)].push_back(particles[i]);
+		mtx.unlock();
 	}
 }
 
@@ -171,10 +236,10 @@ void ParticleSystem::calcDensityPressureByIndex(int start, int end) {
 		vector<ivec3> nCells = getNeighborCells(p->id);
 		//for each possible neighbor in cells
 		for (auto cellPos : nCells) {
-			for (auto np : grid[cellPos.x][cellPos.y][cellPos.z]) {
+			for (auto np : grid[cellPos.x + cellCount.x * (cellPos.y + cellCount.y * cellPos.z)]) {
 				double sqrDist = 0.0; //itself
-				if (p->id != np.first->id) {
-					sqrDist = glm::distance2(p->position, np.first->position);
+				if (p->id != np->id) {
+					sqrDist = glm::distance2(p->position, np->position);
 				}
 				if (sqrDist >= SQUARED_KERNEL_RADIUS) continue; //not neighbor
 				double temp = SQUARED_KERNEL_RADIUS - sqrDist;
@@ -213,32 +278,32 @@ void ParticleSystem::calcForcesByIndex(int start, int end) {
 		dvec3 surfaceNormal = dvec3(0.0);
 		dvec3 totalTensionForce = dvec3(0.0);
 		for (auto cellPos : nCells) {
-			for (auto np : grid[cellPos.x][cellPos.y][cellPos.z]) {
-				if (p->id == np.first->id) { //itself
+			for (auto np : grid[cellPos.x + cellCount.x * (cellPos.y + cellCount.y * cellPos.z)]) {
+				if (p->id == np->id) { //itself
 					continue;
 				}
-				double dist = glm::distance(p->position, np.first->position);
-				if (dist >= KERNEL_RADIUS) continue; //not neighbor
+				double sqrDist = glm::distance2(p->position, np->position);
+				if (sqrDist >= SQUARED_KERNEL_RADIUS) continue; //not neighbor
+				double dist = sqrt(sqrDist);
 				double temp = KERNEL_RADIUS - dist;
 				//////////////////////////
 				//pressure forces
 				//////////////////////////
-				double forcePressure = -(p->pressure + np.first->pressure) / np.first->density * temp * temp * SPIKY_GRAD;
+				double forcePressure = -(p->pressure + np->pressure) / np->density * temp * temp * SPIKY_GRAD;
 				//pressure move particle i further from particle j
-				dvec3 accDir = (p->position - np.first->position) / dist;//normalized direction
+				dvec3 accDir = (p->position - np->position) / dist;//normalized direction
 				totalPressureForce += forcePressure * accDir;
 
 				//////////////////////////
 				//viscosity forces
 				//////////////////////////
-				totalViscoForce += (np.first->velocity - p->velocity) / np.first->density * VISCO_LAPL * temp;
+				totalViscoForce += (np->velocity - p->velocity) / np->density * VISCO_LAPL * temp;
 
 				//////////////////////////
 				//tension forces
 				//////////////////////////
-				double squareDist = dist * dist;
-				surfaceNormal = -POLY6_GRAD * (p->position - np.first->position) / np.first->density * pow(SQUARED_KERNEL_RADIUS - squareDist, 2);
-				totalTensionForce += POLY6_LAPL / np.first->density * (squareDist - SQUARED_KERNEL_RADIUS) * (5 * squareDist - SQUARED_KERNEL_RADIUS);
+				surfaceNormal = -POLY6_GRAD * (p->position - np->position) / np->density * pow(SQUARED_KERNEL_RADIUS - sqrDist, 2);
+				totalTensionForce += POLY6_LAPL / np->density * (sqrDist - SQUARED_KERNEL_RADIUS) * (5 * sqrDist - SQUARED_KERNEL_RADIUS);
 			}
 		}
 		double sqrNormalLength = glm::length2(surfaceNormal);

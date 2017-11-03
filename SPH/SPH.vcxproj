@@ -102,6 +102,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>freeglut.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>D:\Dropbox\.01 SBU Lec Sem 3\CSE 528 Computer Graphic\project\SPHParticles\glew-1.11.0\lib;D:\Dropbox\.01 SBU Lec Sem 3\CSE 528 Computer Graphic\project\SPHParticles\freeglut\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <Profile>true</Profile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -115,6 +116,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <Profile>true</Profile>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

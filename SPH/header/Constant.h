@@ -5,11 +5,11 @@
 #define WINDOW_HEIGHT 720
 
 //THREADING
-#define NUM_THREAD 20
+#define NUM_THREAD 50
 
 //container size
 #define BOX_SIZE_X 1.0
-#define BOX_SIZE_Y 1.4
+#define BOX_SIZE_Y 1.0
 #define BOX_SIZE_Z 1.0
 #define OFFSET_X (BOX_SIZE_X / 2.0)
 #define OFFSET_Y (BOX_SIZE_Y / 2.0)
@@ -17,13 +17,13 @@
 
 //num particle
 #define NUM_PARTICLE_X 20
-#define NUM_PARTICLE_Y 50
+#define NUM_PARTICLE_Y 20
 #define NUM_PARTICLE_Z 20
 #define INIT_PARTICLE_DISTANCE 0.02
 #define PARTICLE_SIZE 5.0f
 
 //world
-#define TIMESTEP 0.006 //second
+#define TIMESTEP 0.004 //second
 #define GRAVITY dvec3(0.0, -9.8, 0.0)
 #define PARTICLE_MASS 0.01 //kg
 #define COLLISION_DAMPING 0.3;
