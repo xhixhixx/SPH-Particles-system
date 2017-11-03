@@ -18,7 +18,7 @@ ParticleSystem::~ParticleSystem()
 void ParticleSystem::createParticleSystem()
 {
 	double widthX = xCnt * INIT_PARTICLE_DISTANCE - 0.5 * BOX_SIZE_X;
-	double widthY = yCnt * INIT_PARTICLE_DISTANCE;
+	double widthY = yCnt * INIT_PARTICLE_DISTANCE - 0.2 * BOX_SIZE_Y;
 	double widthZ = zCnt * INIT_PARTICLE_DISTANCE;
 	
 	int id = 1;
@@ -55,9 +55,6 @@ void ParticleSystem::update() {
 		p->velocity += (p->acceleration + GRAVITY + p->prevAcceleration + GRAVITY) * (0.5 * TIMESTEP);
 
 		double temp = glm::length2(p->velocity);
-		if (temp > MAX_VELOCITY) {
-			p->velocity *= sqrt(MAX_VELOCITY / temp);
-		}
 		p->prevAcceleration = p->acceleration;
 
 		//colision with container
@@ -176,9 +173,10 @@ void ParticleSystem::calcForces() {
 		//find neighbors cell
 		vector<ivec3> nCells = getNeighborCells(p->id);
 		//for each possible neighbor in cells
-		dvec3 totalPressureForce = dvec3(0.0f);
-		dvec3 totalViscoForce = dvec3(0.0f);
-		p->acceleration = dvec3(0.0);
+		dvec3 totalPressureForce = dvec3(0.0);
+		dvec3 totalViscoForce = dvec3(0.0);
+		dvec3 surfaceNormal = dvec3(0.0);
+		dvec3 totalTensionForce = dvec3(0.0);
 		for (auto cellPos : nCells) {
 			for (auto np : grid[cellPos.x][cellPos.y][cellPos.z]) {
 				if (p->id == np.first->id) { //itself
@@ -199,13 +197,27 @@ void ParticleSystem::calcForces() {
 				//viscosity forces
 				//////////////////////////
 				totalViscoForce += (np.first->velocity - p->velocity) / np.first->density * VISCO_LAPL * temp;
+
+				//////////////////////////
+				//tension forces
+				//////////////////////////
+				double squareDist = dist * dist;
+				surfaceNormal = -POLY6_GRAD * (p->position - np.first->position) / np.first->density * pow(SQUARED_KERNEL_RADIUS - squareDist, 2);
+				totalTensionForce += POLY6_LAPL / np.first->density * (squareDist - SQUARED_KERNEL_RADIUS) * (5 * squareDist - SQUARED_KERNEL_RADIUS);
 			}
 		}
+		double sqrNormalLength = glm::length2(surfaceNormal);
+		if (sqrNormalLength > TENSION_THRESHOLD) {
+			totalTensionForce = TENSION_COEF * (totalTensionForce + POLY6_LAPL / p->density * SQUARED_KERNEL_RADIUS * SQUARED_KERNEL_RADIUS) * surfaceNormal / sqrt(sqrNormalLength);
+		}
+		else {
+			totalTensionForce = dvec3(0.0);
+		}
 		//a = f / density
-		dvec3 temp2 = (totalPressureForce + totalViscoForce) / p->density;
+		dvec3 temp2 = (totalPressureForce + totalViscoForce + totalTensionForce) / p->density;
 		if (glm::any(glm::isnan(temp2))) {//numerical error
 			continue;
 		}
-		p->acceleration += temp2;
+		p->acceleration = temp2;
 	}
 }
