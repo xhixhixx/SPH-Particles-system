@@ -29,10 +29,16 @@ public:
 	ivec3 getCellCount() const { return cellCount; }
 	bool checkIsNeighbor(int pId1, int pId2) const;
 
+
+
 private:
 	void populateNeighborGrid();
-	void calcDensityPressure();
-	void calcForces();
+	
+	void calcDensityPressureByThead(bool useThread = true);
+	void calcDensityPressureByIndex(int start, int end);
+
+	void calcForcesByThread(bool useThread = true);
+	void calcForcesByIndex(int start, int end);
 
 private: 
 	ivec3 cellCount;

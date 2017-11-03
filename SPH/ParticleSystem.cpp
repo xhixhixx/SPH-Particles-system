@@ -3,6 +3,7 @@
 #include <iostream>
 #include <glm\gtx\norm.hpp>
 #include <algorithm>
+#include <thread>
 
 vector<vector<int>> DIRECTION3D = { { 1, 0, 0 },{ -1, 0, 0 },{ 0, 1, 0 },{ 0, -1, 0 },{ 0, 0, 1 },{ 0, 0, -1 },
 									{ 1, 1, 0 },{ 1, -1, 0 },{-1, 1, 0 },{ -1, -1, 0 },
@@ -43,8 +44,8 @@ void ParticleSystem::createParticleSystem()
 
 void ParticleSystem::update() {
 	//update system
-	calcDensityPressure();
-	calcForces();
+	calcDensityPressureByThead(true);
+	calcForcesByThread(true);
 
 	//update acceleration and position
 	//for all particle
@@ -146,8 +147,25 @@ void ParticleSystem::populateNeighborGrid() {
 	}
 }
 
-void ParticleSystem::calcDensityPressure() {
-	for (auto p : particles) { //for each particle
+void ParticleSystem::calcDensityPressureByThead(bool useThread) {
+	if (useThread) {
+		thread t[10];
+		int gap = particles.size() / 10;
+		for (int i = 0; i < 10; ++i) { //for each thread
+			t[i] = thread(&ParticleSystem::calcDensityPressureByIndex, this, i * gap, (i + 1) * gap - 1);
+		}
+		for (int i = 0; i < 10; ++i) { //for each thread
+			t[i].join();
+		}
+	}
+	else {
+		calcDensityPressureByIndex(0, particles.size() - 1);
+	}
+}
+
+void ParticleSystem::calcDensityPressureByIndex(int start, int end) {
+	for (int i = start; i <= end && i < particles.size(); ++i) {
+		shared_ptr<Particle> p = particles[i];
 		p->density = 0.0;
 		//find neighbors cell
 		vector<ivec3> nCells = getNeighborCells(p->id);
@@ -168,8 +186,25 @@ void ParticleSystem::calcDensityPressure() {
 	}
 }
 
-void ParticleSystem::calcForces() {
-	for (auto p : particles) { //for each particle
+void ParticleSystem::calcForcesByThread(bool useThread) {
+	if (useThread) {
+		thread t[10];
+		int gap = particles.size() / 10;
+		for (int i = 0; i < 10; ++i) { //for each thread
+			t[i] = thread(&ParticleSystem::calcForcesByIndex, this, i * gap, (i + 1) * gap - 1);
+		}
+		for (int i = 0; i < 10; ++i) { //for each thread
+			t[i].join();
+		}
+	}
+	else {
+		calcForcesByIndex(0, particles.size() - 1);
+	}
+}
+
+void ParticleSystem::calcForcesByIndex(int start, int end) {
+	for (int i = start; i <= end && i < particles.size(); ++i) {
+		shared_ptr<Particle> p = particles[i];
 		//find neighbors cell
 		vector<ivec3> nCells = getNeighborCells(p->id);
 		//for each possible neighbor in cells
