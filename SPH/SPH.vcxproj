@@ -129,6 +129,10 @@
     <ClInclude Include="header\Particle.h" />
     <ClInclude Include="header\ParticleSystem.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="particle.frag" />
+    <None Include="particle.vert" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

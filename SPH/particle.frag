@@ -1,16 +1,11 @@
 void main()
 {
-    const vec3 lightDir = vec3(0.577, 0.577, 0.577);
-
-    // calculate normal from texture coordinates
+    const vec3 L = vec3(0.5, 0.5, 1.0);
     vec3 N;
     N.xy = gl_TexCoord[0].xy*vec2(2.0, -2.0) + vec2(-1.0, 1.0);
     float mag = dot(N.xy, N.xy);
-    if (mag > 1.0) discard;   // kill pixels outside circle
+    if (mag > 1.0) discard;
     N.z = sqrt(1.0-mag);
-
-    // calculate lighting
-    float diffuse = max(0.0, dot(lightDir, N));
-
+    float diffuse = max(0.0, dot(L, N));
     gl_FragColor = gl_Color * diffuse;
 }

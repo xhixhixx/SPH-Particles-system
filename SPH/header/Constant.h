@@ -9,7 +9,7 @@
 
 //container size
 #define BOX_SIZE_X 1.0
-#define BOX_SIZE_Y 1.2
+#define BOX_SIZE_Y 1.0
 #define BOX_SIZE_Z 1.0
 #define OFFSET_X (BOX_SIZE_X / 2.0)
 #define OFFSET_Y (BOX_SIZE_Y / 2.0)
@@ -28,7 +28,7 @@
 #define PARTICLE_MASS 0.01 //kg
 #define COLLISION_DAMPING 0.3;
 #define GAS_CONSTANT 1.0
-#define REST_DENSITY 500.0 //kg/m^3
+#define REST_DENSITY 800.0 //kg/m^3
 #define VISCOSITY 1.0 //kg/m/s
 #define TENSION_COEF 1.0
 #define TENSION_THRESHOLD 0.4
