@@ -21,7 +21,7 @@ ParticleSystem::~ParticleSystem()
 
 void ParticleSystem::createParticleSystem()
 {
-	double widthX = xCnt * INIT_PARTICLE_DISTANCE - 0.4 * BOX_SIZE_X;
+	double widthX = xCnt * INIT_PARTICLE_DISTANCE; //- 0.4 * BOX_SIZE_X;
 	double widthY = yCnt * INIT_PARTICLE_DISTANCE - 0.2 * BOX_SIZE_Y;
 	double widthZ = zCnt * INIT_PARTICLE_DISTANCE;
 	
@@ -63,7 +63,7 @@ void ParticleSystem::update() {
 void ParticleSystem::updatePositionByThread(bool useThread) {
 	if (useThread) {
 		thread t[NUM_THREAD];
-		int gap = grid.size() / NUM_THREAD;
+		int gap = grid.size() / (NUM_THREAD - 1);
 		for (int i = 0; i < NUM_THREAD; ++i) { //for each thread
 			t[i] = thread(&ParticleSystem::updatePositionByIndex, this, i * gap, (i + 1) * gap - 1);
 		}
@@ -166,7 +166,7 @@ void ParticleSystem::populateNeighborGrid() {
 void ParticleSystem::clearGridByThread(bool useThread) {
 	if (useThread) {
 		thread t[NUM_THREAD];
-		int gap = grid.size() / NUM_THREAD;
+		int gap = grid.size() / (NUM_THREAD - 1);
 		for (int i = 0; i < NUM_THREAD; ++i) { //for each thread
 			t[i] = thread(&ParticleSystem::clearGridByIndex, this, i * gap, (i + 1) * gap - 1);
 		}
@@ -188,7 +188,7 @@ void ParticleSystem::clearGridByIndex(int start, int end) {
 void ParticleSystem::calcCellPosByThread(bool useThread) {
 	if (useThread) {
 		thread t[NUM_THREAD];
-		int gap = particles.size() / NUM_THREAD;
+		int gap = particles.size() / (NUM_THREAD - 1);
 		for (int i = 0; i < NUM_THREAD; ++i) { //for each thread
 			t[i] = thread(&ParticleSystem::calcCellPosByIndex, this, i * gap, (i + 1) * gap - 1);
 		}
@@ -215,7 +215,7 @@ void ParticleSystem::calcCellPosByIndex(int start, int end) {
 void ParticleSystem::calcDensityPressureByThead(bool useThread) {
 	if (useThread) {
 		thread t[NUM_THREAD];
-		int gap = particles.size() / NUM_THREAD;
+		int gap = particles.size() / (NUM_THREAD - 1);
 		for (int i = 0; i < NUM_THREAD; ++i) { //for each thread
 			t[i] = thread(&ParticleSystem::calcDensityPressureByIndex, this, i * gap, (i + 1) * gap - 1);
 		}
@@ -254,7 +254,7 @@ void ParticleSystem::calcDensityPressureByIndex(int start, int end) {
 void ParticleSystem::calcForcesByThread(bool useThread) {
 	if (useThread) {
 		thread t[NUM_THREAD];
-		int gap = particles.size() / NUM_THREAD;
+		int gap = particles.size() / (NUM_THREAD - 1);
 		for (int i = 0; i < NUM_THREAD; ++i) { //for each thread
 			t[i] = thread(&ParticleSystem::calcForcesByIndex, this, i * gap, (i + 1) * gap - 1);
 		}
