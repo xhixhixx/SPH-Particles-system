@@ -63,7 +63,7 @@ void ParticleSystem::update() {
 void ParticleSystem::updatePositionByThread(bool useThread) {
 	if (useThread) {
 		thread t[NUM_THREAD];
-		int gap = grid.size() / (NUM_THREAD - 1);
+		int gap = particles.size() / (NUM_THREAD - 1);
 		for (int i = 0; i < NUM_THREAD; ++i) { //for each thread
 			t[i] = thread(&ParticleSystem::updatePositionByIndex, this, i * gap, (i + 1) * gap - 1);
 		}
