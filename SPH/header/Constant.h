@@ -5,7 +5,7 @@
 #define WINDOW_HEIGHT 720
 
 //THREADING
-#define NUM_THREAD 10
+#define NUM_THREAD 100
 
 //container size
 #define BOX_SIZE_X 1.0
@@ -18,20 +18,20 @@
 //num particle
 #define NUM_PARTICLE_X 20
 #define NUM_PARTICLE_Y 50
-#define NUM_PARTICLE_Z 20
+#define NUM_PARTICLE_Z 10
 #define INIT_PARTICLE_DISTANCE 0.02
 #define PARTICLE_SIZE 5.0f
 
 //world
 #define TIMESTEP 0.004 //second
-#define GRAVITY dvec3(0.0, -9.8, 0.0)
+#define GRAVITY dvec3(0.0, -5.8, 0.0)
 #define PARTICLE_MASS 0.01 //kg
 #define COLLISION_DAMPING 0.3;
 #define GAS_CONSTANT 1.0
-#define REST_DENSITY 1000.0 //kg/m^3
+#define REST_DENSITY 500.0 //kg/m^3
 #define VISCOSITY 1.0 //kg/m/s
-#define TENSION_COEF 0.2
-#define TENSION_THRESHOLD 0.3
+#define TENSION_COEF 1.0
+#define TENSION_THRESHOLD 0.4
 
 //kernel radius
 #define KERNEL_RADIUS 0.04
@@ -47,7 +47,7 @@
 #define POLY6_LAPL POLY6_GRAD//-945 / (32 * pi * h^9) * (r^2 - h^2) * (5 * r^2 - h^2)
 
 //DEBUG
-#define PARTICLE_IN_FOCUS 17000
+#define PARTICLE_IN_FOCUS 7000
 
 
 #endif

@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <Windows.h>
 #include <GL\glew.h>
 #include <GL\freeglut.h>
@@ -6,6 +7,8 @@
 #include "header\Constant.h"
 
 unique_ptr<ParticleSystem> pSystem;
+
+GLuint p;
 
 // angle of rotation for the camera direction
 double angle = 0.0;
@@ -153,7 +156,9 @@ void display()
 	//render
 	drawContainer(OFFSET_X, OFFSET_Y, OFFSET_Z);
 	glEnable(GL_POINT_SMOOTH);
+	glUseProgram(p);
 	RenderParticleSystem();
+	glUseProgram(0);
 	//update Particle System for the next timestep
 	pSystem->update();
 
@@ -198,6 +203,70 @@ void keyPressed(unsigned char key, int x, int y) {
 	}
 }
 
+char *textFileRead(char *fn) {
+
+	FILE *fp;
+	char *content = NULL;
+
+	int count = 0;
+
+	if (fn != NULL) {
+		fp = fopen(fn, "rt");
+
+		if (fp != NULL) {
+
+			fseek(fp, 0, SEEK_END);
+			count = ftell(fp);
+			rewind(fp);
+
+			if (count > 0) {
+				content = (char *)malloc(sizeof(char) * (count + 1));
+				count = fread(content, sizeof(char), count, fp);
+				content[count] = '\0';
+			}
+			fclose(fp);
+		}
+	}
+	return content;
+}
+
+void setShaders() {
+
+	GLuint v, f;
+	char *vs, *fs;
+
+	// Create shader handlers
+	v = glCreateShader(GL_VERTEX_SHADER);
+	f = glCreateShader(GL_FRAGMENT_SHADER);
+
+	// Read source code from files
+	vs = textFileRead("particle.vert");
+	fs = textFileRead("particle.frag");
+
+	const char * vv = vs;
+	const char * ff = fs;
+
+	// Set shader source
+	glShaderSource(v, 1, &vv, NULL);
+	glShaderSource(f, 1, &ff, NULL);
+
+	free(vs); free(fs);
+
+	// Compile all shaders
+	glCompileShader(v);
+	glCompileShader(f);
+
+	// Create the program
+	p = glCreateProgram();
+
+	// Attach shaders to program
+	glAttachShader(p, v);
+	glAttachShader(p, f);
+
+	// Link and set program to use
+	glLinkProgram(p);
+	glUseProgram(p);
+}
 
 int main(int argc, char* argv[]) {
 	glutInit(&argc, argv);
@@ -208,11 +277,14 @@ int main(int argc, char* argv[]) {
 
 	glutCreateWindow("SPH");
 	glewInit();
+	glEnable(GL_VERTEX_PROGRAM_POINT_SIZE_NV);
+	glEnable(GL_POINT_SPRITE_ARB);
+	glTexEnvi(GL_POINT_SPRITE_ARB, GL_COORD_REPLACE_ARB, GL_TRUE);
+	glDepthMask(GL_TRUE);
+	glEnable(GL_DEPTH_TEST);
+	setShaders();
 	//create particle system
 	CreateParticleSystem();
-	//display func
-	glEnable(GL_DEPTH_TEST);
-
 	glutReshapeFunc(reshape);
 	glutDisplayFunc(display);
 	glutIdleFunc(display);
