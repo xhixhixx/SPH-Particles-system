@@ -149,12 +149,12 @@ void ParticleSystem::populateNeighborGrid() {
 
 void ParticleSystem::calcDensityPressureByThead(bool useThread) {
 	if (useThread) {
-		thread t[10];
-		int gap = particles.size() / 10;
-		for (int i = 0; i < 10; ++i) { //for each thread
+		thread t[NUM_THREAD];
+		int gap = particles.size() / NUM_THREAD;
+		for (int i = 0; i < NUM_THREAD; ++i) { //for each thread
 			t[i] = thread(&ParticleSystem::calcDensityPressureByIndex, this, i * gap, (i + 1) * gap - 1);
 		}
-		for (int i = 0; i < 10; ++i) { //for each thread
+		for (int i = 0; i < NUM_THREAD; ++i) { //for each thread
 			t[i].join();
 		}
 	}
@@ -188,12 +188,12 @@ void ParticleSystem::calcDensityPressureByIndex(int start, int end) {
 
 void ParticleSystem::calcForcesByThread(bool useThread) {
 	if (useThread) {
-		thread t[10];
-		int gap = particles.size() / 10;
-		for (int i = 0; i < 10; ++i) { //for each thread
+		thread t[NUM_THREAD];
+		int gap = particles.size() / NUM_THREAD;
+		for (int i = 0; i < NUM_THREAD; ++i) { //for each thread
 			t[i] = thread(&ParticleSystem::calcForcesByIndex, this, i * gap, (i + 1) * gap - 1);
 		}
-		for (int i = 0; i < 10; ++i) { //for each thread
+		for (int i = 0; i < NUM_THREAD; ++i) { //for each thread
 			t[i].join();
 		}
 	}
