@@ -1,7 +1,7 @@
-#include "header\ParticleSystem.h"
+#include "header/ParticleSystem.h"
 #include "header/Constant.h"
 #include <iostream>
-#include <glm\gtx\norm.hpp>
+#include <glm/gtx/norm.hpp>
 #include <algorithm>
 #include <thread>
 #include <mutex>
