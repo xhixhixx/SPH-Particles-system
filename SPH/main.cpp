@@ -36,6 +36,9 @@ public:
 		Fl::add_idle(idleCallback, this);
 	}
 
+	~SPHWindow() {
+	}
+
 private:
 	unique_ptr<ParticleSystem> pSystem;
 
@@ -390,39 +393,20 @@ void beepcb(Fl_Widget *, void *) {
 	fflush(stdout);
 }
 
+void onExitCb(Fl_Widget* widget, void*) {
+	exit(0);
+}
+
 int main(int argc, char* argv[])
 {
 	Fl::use_high_res_GL(true);
-	//glutInit(&argc, argv);
-	//glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | FL_OPENGL3);
-	//glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-	//glutCreateWindow("SPH");
-	//GLenum err = glewInit(); // defines pters to functions of OpenGL V 1.2 and above
-	//if (err) Fl::error("glewInit() failed returning %u", err);
-	//fprintf(stderr, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
-	//int gl_version_major;
-	//const char *glv = (const char*)glGetString(GL_VERSION);
-	//fprintf(stderr, "OpenGL version %s supported\n", glv);
-	//sscanf(glv, "%d", &gl_version_major);
-	//if (gl_version_major < 3) {
-	//	fprintf(stderr, "\nThis platform does not support OpenGL V3\n\n");
-	//	exit(1);
-	//}
-	
-	//initShaders();
-	//glutDisplayFunc(display);
-	//glutReshapeFunc(reshape);
-	//glutIdleFunc(display);
-	//glutMouseFunc(myMouse);
-	//glutMotionFunc(myMotion);
-	//glutKeyboardFunc(keyPressed);
 
 	SPHWindow *sphWindow = new SPHWindow(50, 50, WINDOW_WIDTH, WINDOW_HEIGHT, "SPH");
-
 	sphWindow->end();
 	sphWindow->show(argc, argv);
 	
-	Fl_Window *window = new Fl_Window(320, 65);
+	
+	Fl_Window *window = new Fl_Window(1100, 50, 320, 65);
 	Fl_Button *b1 = new Fl_Button(20, 20, 80, 25, "&Beep");
 	b1->callback(beepcb, 0);
 	/*Fl_Button *b2 =*/ new Fl_Button(120, 20, 80, 25, "&no op");
@@ -430,7 +414,8 @@ int main(int argc, char* argv[])
 	//b3->callback(exitcb, 0);
 	window->end();
 	window->show(argc, argv);
+	sphWindow->callback(onExitCb);
+	window->callback(onExitCb);
 
-	//glutMainLoop();
 	return Fl::run();
 }
