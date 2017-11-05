@@ -74,11 +74,11 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)\3rdpartylib\include;$(ProjectDir)\3rdpartylib\glm-0.9.8.5;$(ProjectDir)\3rdpartylib\glew-1.11.0\include;$(ProjectDir)\3rdpartylib\freeglut\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\3rdpartylib\include;$(ProjectDir)\3rdpartylib\glm-0.9.8.5;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>glut32.lib;GLU32.lib;glui32.lib;OPENGL32.lib; glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)\3rdpartylib\lib;$(ProjectDir)\3rdpartylib\glew-1.11.0\lib;$(ProjectDir)\3rdpartylib\freeglut\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glut32.lib;GLU32.lib;OPENGL32.lib; glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)\3rdpartylib\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SubSystem>NotSet</SubSystem>
     </Link>
   </ItemDefinitionGroup>
@@ -96,13 +96,13 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)\3rdpartylib\include;$(ProjectDir)\3rdpartylib\glm-0.9.8.5;$(ProjectDir)\3rdpartylib\glew-1.11.0\include;$(ProjectDir)\3rdpartylib\freeglut\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\3rdpartylib\include;$(ProjectDir)\3rdpartylib\glm-0.9.8.5;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>glut32.lib;GLU32.lib;glui32.lib;OPENGL32.lib; glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)\3rdpartylib\lib;$(ProjectDir)\3rdpartylib\glew-1.11.0\lib;$(ProjectDir)\3rdpartylib\freeglut\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glut32.lib;GLU32.lib;OPENGL32.lib; glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)\3rdpartylib\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <Profile>true</Profile>
       <SubSystem>NotSet</SubSystem>
     </Link>
