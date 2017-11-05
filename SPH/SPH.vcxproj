@@ -74,11 +74,12 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\Dropbox\.01 SBU Lec Sem 3\CSE 528 Computer Graphic\project\SPHParticles\SPH-Particles-system\SPH\3rdpartylib\glm-0.9.8.5;D:\Dropbox\.01 SBU Lec Sem 3\CSE 528 Computer Graphic\project\SPHParticles\glew-1.11.0\include;D:\Dropbox\.01 SBU Lec Sem 3\CSE 528 Computer Graphic\project\SPHParticles\freeglut\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\3rdpartylib\include;$(ProjectDir)\3rdpartylib\glm-0.9.8.5;$(ProjectDir)\3rdpartylib\glew-1.11.0\include;$(ProjectDir)\3rdpartylib\freeglut\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>freeglut.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>D:\Dropbox\.01 SBU Lec Sem 3\CSE 528 Computer Graphic\project\SPHParticles\glew-1.11.0\lib;D:\Dropbox\.01 SBU Lec Sem 3\CSE 528 Computer Graphic\project\SPHParticles\freeglut\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glut32.lib;GLU32.lib;glui32.lib;OPENGL32.lib; glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)\3rdpartylib\lib;$(ProjectDir)\3rdpartylib\glew-1.11.0\lib;$(ProjectDir)\3rdpartylib\freeglut\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <SubSystem>NotSet</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -95,14 +96,15 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\Dropbox\.01 SBU Lec Sem 3\CSE 528 Computer Graphic\project\SPHParticles\SPH-Particles-system\SPH\3rdpartylib\glm-0.9.8.5;D:\Dropbox\.01 SBU Lec Sem 3\CSE 528 Computer Graphic\project\SPHParticles\glew-1.11.0\include;D:\Dropbox\.01 SBU Lec Sem 3\CSE 528 Computer Graphic\project\SPHParticles\freeglut\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\3rdpartylib\include;$(ProjectDir)\3rdpartylib\glm-0.9.8.5;$(ProjectDir)\3rdpartylib\glew-1.11.0\include;$(ProjectDir)\3rdpartylib\freeglut\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>freeglut.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>D:\Dropbox\.01 SBU Lec Sem 3\CSE 528 Computer Graphic\project\SPHParticles\glew-1.11.0\lib;D:\Dropbox\.01 SBU Lec Sem 3\CSE 528 Computer Graphic\project\SPHParticles\freeglut\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glut32.lib;GLU32.lib;glui32.lib;OPENGL32.lib; glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)\3rdpartylib\lib;$(ProjectDir)\3rdpartylib\glew-1.11.0\lib;$(ProjectDir)\3rdpartylib\freeglut\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <Profile>true</Profile>
+      <SubSystem>NotSet</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

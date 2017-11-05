@@ -28,7 +28,7 @@
 #define PARTICLE_MASS 0.01 //kg
 #define COLLISION_DAMPING 0.3;
 #define GAS_CONSTANT 1.0
-#define REST_DENSITY 800.0 //kg/m^3
+#define REST_DENSITY 500.0 //kg/m^3
 #define VISCOSITY 1.0 //kg/m/s
 #define TENSION_COEF 1.0
 #define TENSION_THRESHOLD 0.4

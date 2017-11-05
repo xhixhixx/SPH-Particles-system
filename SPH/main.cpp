@@ -1,7 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <Windows.h>
 #include <GL\glew.h>
-#include <GL\freeglut.h>
+#include <GL\glut.h>
 #include <iostream>
 #include "header\ParticleSystem.h"
 #include "header\Constant.h"
