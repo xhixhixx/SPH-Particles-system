@@ -1,10 +1,20 @@
 #define _CRT_SECURE_NO_WARNINGS
-#include <Windows.h>
-#include <GL/glew.h>
-#include <GL/glut.h>
+//#include <GL/glut.h>
 #include <iostream>
 #include "header/ParticleSystem.h"
 #include "header/Constant.h"
+#include <stdio.h>
+
+#if defined(__APPLE__)
+#  define GL_DO_NOT_WARN_IF_MULTI_GL_VERSION_HEADERS_INCLUDED 1
+#  include <OpenGL/gl3.h> // defines OpenGL 3.0+ functions
+#else
+#  if defined(WIN32)
+#    define GLEW_STATIC 1
+#  endif
+#  include <GL/glew.h>
+#endif
+#include <FL/glut.H>
 
 unique_ptr<ParticleSystem> pSystem;
 
@@ -133,40 +143,6 @@ void computePos(double deltaMove) {
 	z += deltaMove * lz * 0.1f;
 }
 
-void display()
-{
-	if (deltaMove)
-		computePos(deltaMove);
-
-	// Clear Color and Depth Buffers
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	// Reset transformations
-	glLoadIdentity();
-	// Set the camera
-	glTranslatef(CAMERA_MOVEBACK_X, CAMERA_MOVEBACK_Y, CAMERA_MOVEBACK_Z);
-	gluLookAt(x, 1.0f, z,
-		x + lx, 1.0f, z + lz,
-		0.0f, 1.0f, 0.0f);
-
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-	
-	glPushMatrix();
-	//render
-	drawContainer(OFFSET_X, OFFSET_Y, OFFSET_Z);
-	glEnable(GL_POINT_SMOOTH);
-	glUseProgram(p);
-	RenderParticleSystem();
-	glUseProgram(0);
-	//update Particle System for the next timestep
-	pSystem->update();
-
-	glPopMatrix();
-
-	glutSwapBuffers();
-}
-
 static void myMouse(int button, int state, int x, int y)
 {
 	// only start motion if the left button is pressed
@@ -198,9 +174,12 @@ static void myMotion(int x, int y)
 }
 
 void keyPressed(unsigned char key, int x, int y) {
+	//DEBUG
 	if (key == 'f') {
 		particleIdInFocus = rand() % (NUM_PARTICLE_X * NUM_PARTICLE_Y * NUM_PARTICLE_Z);
 	}
+	//
+
 }
 
 char *textFileRead(char *fn) {
@@ -230,76 +209,141 @@ char *textFileRead(char *fn) {
 	return content;
 }
 
-void setShaders() {
+void printShaderInfoLog(GLint shader)
+{
+	int infoLogLen = 0;
+	GLchar *infoLog;
 
-	GLuint v, f;
-	char *vs, *fs;
+	glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLogLen);
+	if (infoLogLen > 0)
+	{
+		infoLog = new GLchar[infoLogLen];
+		// error check for fail to allocate memory omitted
+		glGetShaderInfoLog(shader, infoLogLen, NULL, infoLog);
+		fprintf(stderr, "InfoLog:\n%s\n", infoLog);
+		delete[] infoLog;
+	}
+}
 
-	// Create shader handlers
+void initShaders(void)
+{
+	GLuint f, v;
+	glClearColor(1.0, 1.0, 1.0, 0.0);
+
 	v = glCreateShader(GL_VERTEX_SHADER);
 	f = glCreateShader(GL_FRAGMENT_SHADER);
-
 	// Read source code from files
-	vs = textFileRead("particle.vert");
-	fs = textFileRead("particle.frag");
+	char *vv = textFileRead("particle.vert");
+	char *ff = textFileRead("particle.frag");
 
-	const char * vv = vs;
-	const char * ff = fs;
-
-	// Set shader source
 	glShaderSource(v, 1, &vv, NULL);
 	glShaderSource(f, 1, &ff, NULL);
 
-	free(vs); free(fs);
+	GLint compiled;
 
-	// Compile all shaders
 	glCompileShader(v);
-	glCompileShader(f);
+	glGetShaderiv(v, GL_COMPILE_STATUS, &compiled);
+	if (!compiled)
+	{
+		fprintf(stderr, "Vertex shader not compiled.\n");
+		printShaderInfoLog(v);
+	}
 
-	// Create the program
+	glCompileShader(f);
+	glGetShaderiv(f, GL_COMPILE_STATUS, &compiled);
+	if (!compiled)
+	{
+		fprintf(stderr, "Fragment shader not compiled.\n");
+		printShaderInfoLog(f);
+	}
+
 	p = glCreateProgram();
 
-	// Attach shaders to program
 	glAttachShader(p, v);
 	glAttachShader(p, f);
+	glBindAttribLocation(p, 0, "in_Position");
+	glBindAttribLocation(p, 1, "in_Color");
 
-	// Link and set program to use
 	glLinkProgram(p);
+	glGetProgramiv(p, GL_LINK_STATUS, &compiled);
+	if (compiled != GL_TRUE) {
+		GLchar *infoLog; GLint length;
+		glGetProgramiv(p, GL_INFO_LOG_LENGTH, &length);
+		infoLog = new GLchar[length];
+		glGetProgramInfoLog(p, length, NULL, infoLog);
+		fprintf(stderr, "Link log=%s\n", infoLog);
+		delete[] infoLog;
+	}
 	glUseProgram(p);
 }
 
-int main(int argc, char* argv[]) {
-	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
-	//Create window
-	glutInitWindowPosition(100, 100);
-	glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 
+void display(void)
+{
+	if (deltaMove)
+		computePos(deltaMove);
+
+	// Clear Color and Depth Buffers
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	// Reset transformations
+	glLoadIdentity();
+	// Set the camera
+	glTranslatef(CAMERA_MOVEBACK_X, CAMERA_MOVEBACK_Y, CAMERA_MOVEBACK_Z);
+	gluLookAt(x, 1.0f, z,
+		x + lx, 1.0f, z + lz,
+		0.0f, 1.0f, 0.0f);
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+	glPushMatrix();
+	//render
+	glUseProgram(0);
+	drawContainer(OFFSET_X, OFFSET_Y, OFFSET_Z);
+	glEnable(GL_POINT_SMOOTH);
+	glUseProgram(p);
+	RenderParticleSystem();
+	
+	//update Particle System for the next timestep
+	pSystem->update();
+
+	glPopMatrix();
+
+	glutSwapBuffers();
+}
+
+int main(int argc, char* argv[])
+{
+	Fl::use_high_res_GL(true);
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | FL_OPENGL3);
+	glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 	glutCreateWindow("SPH");
-	glewInit();
+	GLenum err = glewInit(); // defines pters to functions of OpenGL V 1.2 and above
+	if (err) Fl::error("glewInit() failed returning %u", err);
+	fprintf(stderr, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
+	int gl_version_major;
+	const char *glv = (const char*)glGetString(GL_VERSION);
+	fprintf(stderr, "OpenGL version %s supported\n", glv);
+	sscanf(glv, "%d", &gl_version_major);
+	if (gl_version_major < 3) {
+		fprintf(stderr, "\nThis platform does not support OpenGL V3\n\n");
+		exit(1);
+	}
 	glEnable(GL_VERTEX_PROGRAM_POINT_SIZE_NV);
 	glEnable(GL_POINT_SPRITE_ARB);
 	glTexEnvi(GL_POINT_SPRITE_ARB, GL_COORD_REPLACE_ARB, GL_TRUE);
 	glDepthMask(GL_TRUE);
 	glEnable(GL_DEPTH_TEST);
-	setShaders();
-	//create particle system
 	CreateParticleSystem();
-	glutReshapeFunc(reshape);
+	initShaders();
 	glutDisplayFunc(display);
+	glutReshapeFunc(reshape);
 	glutIdleFunc(display);
-
 	glutMouseFunc(myMouse);
 	glutMotionFunc(myMotion);
 	glutKeyboardFunc(keyPressed);
-
-	GLenum err = glewInit();
-	if (GLEW_OK != err) {
-		fprintf(stderr, "GLEW error");
-		return 1;
-	}
-
-
 	glutMainLoop();
 	return 0;
 }
