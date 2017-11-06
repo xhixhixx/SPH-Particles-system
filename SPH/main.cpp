@@ -523,7 +523,7 @@ int main(int argc, char* argv[])
 	createSliderForParam("Gas Constant", 1.0, 5.0, params->gasConstant, onGasConstSliderDrag);
 	createSliderForParam("Viscosity", 1.0, 10.0, params->viscosity, onViscosSliderDrag);
 	createSliderForParam("Surface Tension Coefficient", 1.0, 5.0, params->tensionCoef, onTensionCoefSliderDrag);
-	createSliderForParam("Surface Tension Threshold", 0.1, 50.0, params->tensionThresh, onTensionThreshSliderDrag);
+	createSliderForParam("Surface Tension Threshold", 0.0, 100.0, params->tensionThresh, onTensionThreshSliderDrag);
 
 	
 

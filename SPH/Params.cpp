@@ -12,7 +12,7 @@ Params::Params()
 	setViscosVarSet(1.0);
 	//
 	tensionCoef = 1.0;
-	tensionThresh = 10.0;
+	tensionThresh = 40.0;
 
 	gravity = 5.8;
 }
