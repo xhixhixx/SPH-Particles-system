@@ -30,7 +30,7 @@ void ParticleSystem::createParticleSystem()
 		for (int j = 0; j < yCnt; ++j) {
 			for (int k = 0; k < zCnt; ++k) {
 				dvec3 pos(- widthX / 2 + i * INIT_PARTICLE_DISTANCE, - widthY / 2 + j * INIT_PARTICLE_DISTANCE, - widthZ / 2 + k * INIT_PARTICLE_DISTANCE);
-				particles.emplace_back(make_shared<Particle>(pos, id++));
+				particles.emplace_back(make_shared<Particle>(pos, id++, params.restDensity));
 			}
 		}
 	}
@@ -47,6 +47,7 @@ void ParticleSystem::createParticleSystem()
 }
 
 void ParticleSystem::update() {
+	if (!running) return;
 	//update system
 	calcDensityPressureByThead(true);
 	calcForcesByThread(true);
@@ -116,13 +117,13 @@ void ParticleSystem::updatePositionByIndex(int start, int end) {
 			negateZ = true;
 		}
 		if (negateX) {
-			p->velocity.x = -p->velocity.x * COLLISION_DAMPING;
+			p->velocity.x = -p->velocity.x * params.collisionDamping;
 		}
 		if (negateY) {
-			p->velocity.y = -p->velocity.y * COLLISION_DAMPING;
+			p->velocity.y = -p->velocity.y * params.collisionDamping;
 		}
 		if (negateZ) {
-			p->velocity.z = -p->velocity.z * COLLISION_DAMPING;
+			p->velocity.z = -p->velocity.z * params.collisionDamping;
 		}
 	}
 }
@@ -153,6 +154,13 @@ bool ParticleSystem::checkIsNeighbor(int pId1, int pId2) const {
 		return true;
 	}
 	return false;
+}
+
+void ParticleSystem::resetSystem() {
+	running = false;
+	particles.clear();
+	grid.clear();
+	createParticleSystem();
 }
 
 void ParticleSystem::populateNeighborGrid() {
@@ -247,7 +255,7 @@ void ParticleSystem::calcDensityPressureByIndex(int start, int end) {
 			}
 		}
 		p->density *= PARTICLE_MASS * POLY6; //optimization
-		p->pressure = GAS_CONSTANT * (p->density - REST_DENSITY);
+		p->pressure = params.gasConstant * (p->density - params.restDensity);
 	}
 }
 
@@ -297,7 +305,7 @@ void ParticleSystem::calcForcesByIndex(int start, int end) {
 				//////////////////////////
 				//viscosity forces
 				//////////////////////////
-				totalViscoForce += (np->velocity - p->velocity) / np->density * VISCO_LAPL * temp;
+				totalViscoForce += (np->velocity - p->velocity) / np->density * params.viscoLapl * temp;
 
 				//////////////////////////
 				//tension forces
@@ -307,8 +315,8 @@ void ParticleSystem::calcForcesByIndex(int start, int end) {
 			}
 		}
 		double sqrNormalLength = glm::length2(surfaceNormal);
-		if (sqrNormalLength > TENSION_THRESHOLD) {
-			totalTensionForce = TENSION_COEF * (totalTensionForce + POLY6_LAPL / p->density * SQUARED_KERNEL_RADIUS * SQUARED_KERNEL_RADIUS) * surfaceNormal / sqrt(sqrNormalLength);
+		if (sqrNormalLength > params.tensionThresh) {
+			totalTensionForce = params.tensionCoef * (totalTensionForce + POLY6_LAPL / p->density * SQUARED_KERNEL_RADIUS * SQUARED_KERNEL_RADIUS) * surfaceNormal / sqrt(sqrNormalLength);
 		}
 		else {
 			totalTensionForce = dvec3(0.0);

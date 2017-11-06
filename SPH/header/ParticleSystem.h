@@ -4,19 +4,16 @@
 #include <vector>
 #include "Particle.h"
 #include <unordered_map>
+#include "Params.h"
 using namespace std;
 class ParticleSystem
 {
 public:
-	ParticleSystem() {
-		xCnt = 1;
-		yCnt = 1;
-		zCnt = 1;
-	};
-	ParticleSystem(int _xCnt, int _yCnt, int _zCnt) {
+	ParticleSystem(int _xCnt, int _yCnt, int _zCnt, const Params& _params) : params(_params) {
 		xCnt = _xCnt;
 		yCnt = _yCnt;
 		zCnt = _zCnt;
+		running = false;
 	}
 	virtual ~ParticleSystem();
 
@@ -28,6 +25,12 @@ public:
 	vector<ivec3> getNeighborCells(int pId);
 	ivec3 getCellCount() const { return cellCount; }
 	bool checkIsNeighbor(int pId1, int pId2) const;
+
+	void startSystem() { running = true; }
+	void stopSystem() { running = false; }
+	void resetSystem();
+	
+	int getState() { return running ? 1 : 0; }
 
 
 
@@ -49,11 +52,15 @@ private:
 	void updatePositionByThread(bool useThread = true);
 	void updatePositionByIndex(int start, int end);
 
-private: 
+private:
+	const Params& params;
 	ivec3 cellCount;
 	int xCnt, yCnt, zCnt;
 	vector<shared_ptr<Particle>> particles;
 	vector<vector<shared_ptr<Particle>>> grid;
+
+	//State
+	bool running;
 };
 
 #endif

@@ -26,12 +26,6 @@
 #define TIMESTEP 0.004 //second
 #define GRAVITY dvec3(0.0, -5.8, 0.0)
 #define PARTICLE_MASS 0.01 //kg
-#define COLLISION_DAMPING 0.3;
-#define GAS_CONSTANT 1.0
-#define REST_DENSITY 500.0 //kg/m^3
-#define VISCOSITY 1.0 //kg/m/s
-#define TENSION_COEF 1.0
-#define TENSION_THRESHOLD 0.4
 
 //kernel radius
 #define KERNEL_RADIUS 0.04
@@ -42,7 +36,7 @@
 #define PI 3.14159265359
 #define POLY6 (315.0 / (64.0 * PI * pow(KERNEL_RADIUS, 9)))
 #define SPIKY_GRAD (PARTICLE_MASS / 2.0 * -45.0 / (PI * pow(KERNEL_RADIUS, 6))) //spiky gradient = -45 / (pi.h^6) * (h-r)^2   ----PARTICLE_MASS / 2 is pre-calc
-#define VISCO_LAPL (VISCOSITY * PARTICLE_MASS * 45.0 / (PI * pow(KERNEL_RADIUS, 6))) //viso laplacian = 45 / (pi.h^6) * (h-r) -- VISCO * MASS is pre-calc
+
 #define POLY6_GRAD (PARTICLE_MASS / 2.0 * -945 / (32 * PI * pow(KERNEL_RADIUS, 9)))// = -945/(32*pi*h^9) * r * (h^2 - r^2) ^ 2
 #define POLY6_LAPL POLY6_GRAD//-945 / (32 * pi * h^9) * (r^2 - h^2) * (5 * r^2 - h^2)
 

@@ -27,6 +27,9 @@
     <ClCompile Include="ParticleSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Params.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="header\Particle.h">
@@ -36,6 +39,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="header\Constant.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="header\Params.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

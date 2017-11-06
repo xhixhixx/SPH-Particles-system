@@ -15,7 +15,7 @@ public:
 		color = dvec3(0.0, 0.0, 1.0);
 		reCalculateGridCell();
 	};
-	Particle(dvec3& pos, int _id) {
+	Particle(dvec3& pos, int _id, double restDens) {
 		position = dvec3(pos.x, pos.y, pos.z);
 		id = _id;
 		
@@ -23,7 +23,7 @@ public:
 		acceleration = dvec3(0.0);
 		prevAcceleration = dvec3(0.0);
 
-		density = REST_DENSITY;
+		density = restDens;
 		pressure = 0.0;
 		
 		reCalculateGridCell();
