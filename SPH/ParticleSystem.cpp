@@ -49,11 +49,11 @@ void ParticleSystem::createParticleSystem()
 void ParticleSystem::update() {
 	if (!running) return;
 	//update system
-	calcDensityPressureByThead(true);
-	calcForcesByThread(true);
+	calcDensityPressureByThead(USING_MULTITHREADING);
+	calcForcesByThread(USING_MULTITHREADING);
 	//update acceleration and position
 	//for all particle
-	updatePositionByThread(true);
+	updatePositionByThread(USING_MULTITHREADING);
 	////////////////////////////
 	// position change 
 	// Need to update neighbor
@@ -168,7 +168,7 @@ void ParticleSystem::populateNeighborGrid() {
 	fill(grid.begin(), grid.end(), vector<shared_ptr<Particle>>());
 	
 	//repopulate
-	calcCellPosByThread(true);
+	calcCellPosByThread(USING_MULTITHREADING);
 }
 
 void ParticleSystem::clearGridByThread(bool useThread) {

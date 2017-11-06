@@ -109,7 +109,7 @@ public:
 
 			//
 			if (focusParticleId == -1) {
-				if (pList[i]->isSurface) {
+				if (pList[i]->isSurface && SURFACE_TRACKING) {
 					glColor3d(0.0, 1.0, 0.0);
 				}
 				else {

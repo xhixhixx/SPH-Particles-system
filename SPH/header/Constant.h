@@ -5,6 +5,7 @@
 #define WINDOW_HEIGHT 720
 
 //THREADING
+#define USING_MULTITHREADING true
 #define NUM_THREAD 100
 
 //container size
@@ -42,6 +43,7 @@
 
 //DEBUG
 #define PARTICLE_IN_FOCUS -1
+#define SURFACE_TRACKING true
 
 
 #endif
