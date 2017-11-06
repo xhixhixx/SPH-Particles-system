@@ -317,9 +317,11 @@ void ParticleSystem::calcForcesByIndex(int start, int end) {
 		double sqrNormalLength = glm::length2(surfaceNormal);
 		if (sqrNormalLength > params.tensionThresh) {
 			totalTensionForce = params.tensionCoef * (totalTensionForce + POLY6_LAPL / p->density * SQUARED_KERNEL_RADIUS * SQUARED_KERNEL_RADIUS) * surfaceNormal / sqrt(sqrNormalLength);
+			p->isSurface = true;
 		}
 		else {
 			totalTensionForce = dvec3(0.0);
+			p->isSurface = false;
 		}
 		//a = f / density
 		dvec3 temp2 = (totalPressureForce + totalViscoForce + totalTensionForce) / p->density;

@@ -109,7 +109,12 @@ public:
 
 			//
 			if (focusParticleId == -1) {
-				SetNormalParticleColor();
+				if (pList[i]->isSurface) {
+					glColor3d(0.0, 1.0, 0.0);
+				}
+				else {
+					SetNormalParticleColor();
+				}
 			}
 			else if (pList[i]->id == focusParticleId) {
 				glColor3d(1.0, 0.0, 0.0);
@@ -509,7 +514,7 @@ int main(int argc, char* argv[])
 	createSliderForParam("Gas Constant", 1.0, 5.0, params->gasConstant, onGasConstSliderDrag);
 	createSliderForParam("Viscosity", 1.0, 10.0, params->viscosity, onViscosSliderDrag);
 	createSliderForParam("Surface Tension Coefficient", 1.0, 5.0, params->tensionCoef, onTensionCoefSliderDrag);
-	createSliderForParam("Surface Tension Threshold", 0.1, 1.0, params->tensionThresh, onTensionThreshSliderDrag);
+	createSliderForParam("Surface Tension Threshold", 0.1, 50.0, params->tensionThresh, onTensionThreshSliderDrag);
 	
 
 	window->end();

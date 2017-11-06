@@ -37,7 +37,7 @@
 #define POLY6 (315.0 / (64.0 * PI * pow(KERNEL_RADIUS, 9)))
 #define SPIKY_GRAD (PARTICLE_MASS / 2.0 * -45.0 / (PI * pow(KERNEL_RADIUS, 6))) //spiky gradient = -45 / (pi.h^6) * (h-r)^2   ----PARTICLE_MASS / 2 is pre-calc
 
-#define POLY6_GRAD (PARTICLE_MASS / 2.0 * -945 / (32 * PI * pow(KERNEL_RADIUS, 9)))// = -945/(32*pi*h^9) * r * (h^2 - r^2) ^ 2
+#define POLY6_GRAD (PARTICLE_MASS * -945 / (32 * PI * pow(KERNEL_RADIUS, 9)))// = -945/(32*pi*h^9) * r * (h^2 - r^2) ^ 2
 #define POLY6_LAPL POLY6_GRAD//-945 / (32 * pi * h^9) * (r^2 - h^2) * (5 * r^2 - h^2)
 
 //DEBUG

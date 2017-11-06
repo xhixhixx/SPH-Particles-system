@@ -13,6 +13,7 @@ public:
 		position = dvec3(0.0, 0.0, 0.0);
 		//default color blue
 		color = dvec3(0.0, 0.0, 1.0);
+		isSurface = false;
 		reCalculateGridCell();
 	};
 	Particle(dvec3& pos, int _id, double restDens) {
@@ -25,6 +26,8 @@ public:
 
 		density = restDens;
 		pressure = 0.0;
+
+		isSurface = false;
 		
 		reCalculateGridCell();
 	};
@@ -47,6 +50,9 @@ public:
 	
 	double density;
 	double pressure;
+	
+	//surface tracking
+	bool isSurface;
 };
 
 #endif
