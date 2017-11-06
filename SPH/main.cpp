@@ -108,7 +108,10 @@ public:
 			//SetParticleColorByCell(0.1f * pList[i]->cellPosition.x, 0.1f * pList[i]->cellPosition.y, 0.1f * pList[i]->cellPosition.z);
 
 			//
-			if (pList[i]->id == focusParticleId) {
+			if (focusParticleId == -1) {
+				SetNormalParticleColor();
+			}
+			else if (pList[i]->id == focusParticleId) {
 				glColor3d(1.0, 0.0, 0.0);
 			}
 			else if (pSystem->checkIsNeighbor(focusParticleId, pList[i]->id)) {

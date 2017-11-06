@@ -41,7 +41,7 @@
 #define POLY6_LAPL POLY6_GRAD//-945 / (32 * pi * h^9) * (r^2 - h^2) * (5 * r^2 - h^2)
 
 //DEBUG
-#define PARTICLE_IN_FOCUS 7000
+#define PARTICLE_IN_FOCUS -1
 
 
 #endif
