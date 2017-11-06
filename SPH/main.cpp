@@ -28,8 +28,8 @@
 
 
 #define CAMERA_MOVEBACK_X 0.0f
-#define CAMERA_MOVEBACK_Y 1.0f
-#define CAMERA_MOVEBACK_Z -2.0f
+#define CAMERA_MOVEBACK_Y 1.1f
+#define CAMERA_MOVEBACK_Z -1.6f
 
 void idleCallback(void* pData);
 unique_ptr<Params> params;
@@ -426,6 +426,14 @@ void resetCb(Fl_Widget* widget, void* data) {
 	((Fl_Button*)data)->label("START");
 }
 
+void onGravitySliderDrag(Fl_Widget* widget, void* data) {
+	params->gravity = ((Fl_Slider*)widget)->value();
+	stringstream ss;
+	ss << fixed << setprecision(2) << params->gravity;
+
+	((Fl_Text_Buffer*)data)->text(ss.str().c_str());
+}
+
 void onRestDensSliderDrag(Fl_Widget* widget, void* data) {
 	params->restDensity = ((Fl_Slider*)widget)->value();
 	stringstream ss;
@@ -509,12 +517,14 @@ int main(int argc, char* argv[])
 	resetBtn->callback(resetCb, startBtn);
 
 	//slider control + value display
+	createSliderForParam("Gravity", 1.0, 20.0, params->gravity, onGravitySliderDrag);
 	createSliderForParam("Rest Density", 200, 2000, params->restDensity, onRestDensSliderDrag);
 	createSliderForParam("Collision Damping", 0.1, 1.0, params->collisionDamping, onCollisionDampingSliderDrag);
 	createSliderForParam("Gas Constant", 1.0, 5.0, params->gasConstant, onGasConstSliderDrag);
 	createSliderForParam("Viscosity", 1.0, 10.0, params->viscosity, onViscosSliderDrag);
 	createSliderForParam("Surface Tension Coefficient", 1.0, 5.0, params->tensionCoef, onTensionCoefSliderDrag);
 	createSliderForParam("Surface Tension Threshold", 0.1, 50.0, params->tensionThresh, onTensionThreshSliderDrag);
+
 	
 
 	window->end();

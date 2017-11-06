@@ -15,6 +15,8 @@ public:
 	double tensionCoef;
 	double tensionThresh;
 
+	double gravity;
+
 public:
 	void setViscosVarSet(double vis);
 };

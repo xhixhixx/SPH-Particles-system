@@ -82,8 +82,8 @@ void ParticleSystem::updatePositionByIndex(int start, int end) {
 		shared_ptr<Particle> p = particles[i];
 		//p->acceleration += GRAVITY;
 		//Leap frog iteration
-		p->position += p->velocity * TIMESTEP + (p->prevAcceleration + GRAVITY) * (0.5 * TIMESTEP * TIMESTEP);
-		p->velocity += (p->acceleration + GRAVITY + p->prevAcceleration + GRAVITY) * (0.5 * TIMESTEP);
+		p->position += p->velocity * TIMESTEP + (p->prevAcceleration + dvec3(0.0, -params.gravity, 0.0)) * (0.5 * TIMESTEP * TIMESTEP);
+		p->velocity += (p->acceleration + dvec3(0.0, -params.gravity, 0.0) + p->prevAcceleration + dvec3(0.0, -params.gravity, 0.0)) * (0.5 * TIMESTEP);
 
 		double temp = glm::length2(p->velocity);
 		p->prevAcceleration = p->acceleration;
@@ -311,18 +311,19 @@ void ParticleSystem::calcForcesByIndex(int start, int end) {
 				//tension forces
 				//////////////////////////
 				surfaceNormal = -POLY6_GRAD * (p->position - np->position) / np->density * pow(SQUARED_KERNEL_RADIUS - sqrDist, 2);
-				totalTensionForce += POLY6_LAPL / np->density * (sqrDist - SQUARED_KERNEL_RADIUS) * (5 * sqrDist - SQUARED_KERNEL_RADIUS);
+				totalTensionForce += POLY6_LAPL / np->density * (sqrDist - SQUARED_KERNEL_RADIUS) * (sqrDist - 3 / 4 * (SQUARED_KERNEL_RADIUS - sqrDist));
 			}
 		}
 		double sqrNormalLength = glm::length2(surfaceNormal);
 		if (sqrNormalLength > params.tensionThresh) {
-			totalTensionForce = params.tensionCoef * (totalTensionForce + POLY6_LAPL / p->density * SQUARED_KERNEL_RADIUS * SQUARED_KERNEL_RADIUS) * surfaceNormal / sqrt(sqrNormalLength);
+			totalTensionForce = params.tensionCoef * (totalTensionForce + POLY6_LAPL / p->density * SQUARED_KERNEL_RADIUS * 3 / 4 * SQUARED_KERNEL_RADIUS) * surfaceNormal / sqrt(sqrNormalLength);
 			p->isSurface = true;
 		}
 		else {
 			totalTensionForce = dvec3(0.0);
 			p->isSurface = false;
 		}
+		//totalTensionForce = dvec3(0.0);
 		//a = f / density
 		dvec3 temp2 = (totalPressureForce + totalViscoForce + totalTensionForce) / p->density;
 		if (glm::any(glm::isnan(temp2))) {//numerical error
