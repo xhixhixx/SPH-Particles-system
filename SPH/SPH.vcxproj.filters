@@ -30,6 +30,9 @@
     <ClCompile Include="Params.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MarchingCube.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="header\Particle.h">
@@ -42,6 +45,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="header\Params.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="header\MarchingCube.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="header\MarchingCubeTable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

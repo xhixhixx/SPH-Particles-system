@@ -123,12 +123,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MarchingCube.cpp" />
     <ClCompile Include="Params.cpp" />
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="header\Constant.h" />
+    <ClInclude Include="header\MarchingCube.h" />
+    <ClInclude Include="header\MarchingCubeTable.h" />
     <ClInclude Include="header\Params.h" />
     <ClInclude Include="header\Particle.h" />
     <ClInclude Include="header\ParticleSystem.h" />
