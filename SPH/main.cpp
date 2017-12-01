@@ -25,6 +25,7 @@
 #include <string>
 #include <iomanip>
 #include <sstream>
+#include "header/MarchingCube.h"
 
 
 #define CAMERA_MOVEBACK_X 0.0f
@@ -34,6 +35,22 @@
 void idleCallback(void* pData);
 unique_ptr<Params> params;
 shared_ptr<ParticleSystem> pSystem;
+
+float3 world_origin;
+float3 world_side;
+
+float3 *model_vox;
+float *model_scalar;
+uint row_vox;
+uint col_vox;
+uint len_vox;
+uint tot_vox;
+float vox_size;
+MarchingCube *mc;
+float light_ambient[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+float light_diffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+float light_position[] = { -10.0f, -10.0f, -10.0f, 1.0f };
+
 class SPHWindow : public Fl_Glut_Window {
 public:
 	
@@ -41,6 +58,7 @@ public:
 		mode(FL_RGB | FL_ALPHA | FL_DOUBLE | FL_OPENGL3);
 		p = 0;
 		CreateParticleSystem();
+		init_marching_cube_model();
 		Fl::add_idle(idleCallback, this);
 	}
 
@@ -68,6 +86,74 @@ private:
 
 
 public: 
+	//////////////////////////////////////////////////////
+	//
+	// Marching cube related
+	//
+	//////////////////////////////////////////////////////
+	void init_marching_cube_model()
+	{
+		world_origin.x = -0.5f;
+		world_origin.y = -0.5f;
+		world_origin.z = -0.5f;
+
+		world_side.x = BOX_SIZE_X;
+		world_side.y = BOX_SIZE_Y;
+		world_side.z = BOX_SIZE_Z;
+
+		vox_size = 0.1f;
+		row_vox = world_side.x / vox_size;
+		col_vox = world_side.y / vox_size;
+		len_vox = world_side.z / vox_size;
+		tot_vox = row_vox*col_vox*len_vox;
+
+		model_vox = (float3 *)malloc(sizeof(float3)*row_vox*col_vox*len_vox);
+		model_scalar = (float *)malloc(sizeof(float)*row_vox*col_vox*len_vox);
+
+		float model_radius = 0.8f;
+		float3 model_center;
+
+		model_center.x = 0.5f;
+		model_center.y = 0.5f;
+		model_center.z = 0.5f;
+
+		uint index;
+		float dist;
+		for (uint count_x = 0; count_x<row_vox; count_x++)
+		{
+			for (uint count_y = 0; count_y<col_vox; count_y++)
+			{
+				for (uint count_z = 0; count_z<len_vox; count_z++)
+				{
+					index = count_z*row_vox*col_vox + count_y*row_vox + count_x;
+
+					model_vox[index].x = count_x*vox_size;
+					model_vox[index].y = count_y*vox_size;
+					model_vox[index].z = count_z*vox_size;
+
+					dist = (model_vox[index].x - model_center.x)*(model_vox[index].x - model_center.x)
+						+ (model_vox[index].y - model_center.y)*(model_vox[index].y - model_center.y)
+						+ (model_vox[index].z - model_center.z)*(model_vox[index].z - model_center.z);
+
+					if (dist > model_radius*model_radius)
+					{
+						model_scalar[index] = 0.0f;
+						continue;
+					}
+
+					model_scalar[index] = pow(1.0 - dist / model_radius / model_radius, 3);
+				}
+			}
+		}
+
+		mc = new MarchingCube(row_vox, col_vox, len_vox, model_scalar, model_vox, world_origin, vox_size, 0.4f);
+	}
+	//////////////////////////////////////////////////////
+	//
+	// Marching cube related END
+	//
+	//////////////////////////////////////////////////////
+
 	void reshape(int w, int h)
 	{
 		glViewport(0, 0, w, h);
@@ -270,6 +356,50 @@ public:
 		glUseProgram(p);
 	}
 
+	void draw1(void) {
+		if ((!valid())) {
+			reshape(WINDOW_WIDTH, WINDOW_HEIGHT);
+		}
+		if (deltaMove)
+			computePos(deltaMove);
+
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+		// Reset transformations
+		glLoadIdentity();
+		// Set the camera
+		glTranslatef(CAMERA_MOVEBACK_X, CAMERA_MOVEBACK_Y, CAMERA_MOVEBACK_Z);
+		gluLookAt(x, 1.0f, z,
+			x + lx, 1.0f, z + lz,
+			0.0f, 1.0f, 0.0f);
+
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		glPushMatrix();
+
+		glLightfv(GL_LIGHT1, GL_AMBIENT, light_ambient);
+		glLightfv(GL_LIGHT1, GL_DIFFUSE, light_diffuse);
+		glLightfv(GL_LIGHT1, GL_POSITION, light_position);
+		glEnable(GL_LIGHT1);
+		glEnable(GL_LIGHTING);
+
+		mc->run();
+
+		glDisable(GL_LIGHTING);
+
+		glColor3f(1.0f, 0.0f, 0.0f);
+		drawContainer(OFFSET_X, OFFSET_Y, OFFSET_Z);
+
+		glColor3f(1.0, 1.0, 0.0f);
+		glPointSize(20.0f);
+		glBegin(GL_POINTS);
+		glVertex3f(10.0f, 10.0f, 10.0f);
+		glEnd();
+
+		glPopMatrix();
+
+		swap_buffers();
+	}
 
 	void draw(void)
 	{
@@ -531,6 +661,9 @@ int main(int argc, char* argv[])
 	window->show(argc, argv);
 	sphWindow->callback(onExitCb);
 	window->callback(onExitCb);
+
+	//free(model_scalar);
+	//free(model_vox);
 
 	return Fl::run();
 }

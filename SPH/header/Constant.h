@@ -18,8 +18,8 @@
 
 //num particle
 #define NUM_PARTICLE_X 20
-#define NUM_PARTICLE_Y 50
-#define NUM_PARTICLE_Z 10
+#define NUM_PARTICLE_Y 20
+#define NUM_PARTICLE_Z 20
 #define INIT_PARTICLE_DISTANCE 0.02
 #define PARTICLE_SIZE 5.0f
 
