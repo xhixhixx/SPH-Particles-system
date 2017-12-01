@@ -21,8 +21,9 @@ ParticleSystem::~ParticleSystem()
 
 void ParticleSystem::createParticleSystem()
 {
-	double widthX = xCnt * INIT_PARTICLE_DISTANCE; //- 0.4 * BOX_SIZE_X;
-	double widthY = yCnt * INIT_PARTICLE_DISTANCE - 0.2 * BOX_SIZE_Y;
+	//Breaking Dam set
+	double widthX = xCnt * INIT_PARTICLE_DISTANCE + 0.6 * BOX_SIZE_X;
+	double widthY = yCnt * INIT_PARTICLE_DISTANCE + 0.2 * BOX_SIZE_Y;
 	double widthZ = zCnt * INIT_PARTICLE_DISTANCE;
 	
 	int id = 1;
