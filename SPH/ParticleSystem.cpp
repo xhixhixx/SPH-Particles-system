@@ -24,7 +24,7 @@ void ParticleSystem::createParticleSystem()
 	//Breaking Dam set
 	double widthX = xCnt * INIT_PARTICLE_DISTANCE + 0.6 * BOX_SIZE_X;
 	double widthY = yCnt * INIT_PARTICLE_DISTANCE + 0.2 * BOX_SIZE_Y;
-	double widthZ = zCnt * INIT_PARTICLE_DISTANCE;
+	double widthZ = zCnt * INIT_PARTICLE_DISTANCE + 0.6 * BOX_SIZE_Z;
 	
 	int id = 1;
 	for (int i = 0; i < xCnt; ++i) {
@@ -144,6 +144,56 @@ vector<ivec3> ParticleSystem::getNeighborCells(int pId) {
 	//including itself 
 	res.emplace_back(p->cellPosition);
 	return res;
+}
+
+vector<ivec3> ParticleSystem::getNeighborCells(dvec3 pos) {
+	vector<ivec3> res;
+	ivec3 centerCell = ivec3((pos.x + OFFSET_X) / CELL_SIZE, (pos.y + OFFSET_Y) / CELL_SIZE, (pos.z + OFFSET_Z) / CELL_SIZE);
+	for (auto d : DIRECTION3D) {
+		int newX = centerCell.x + d[0];
+		int newY = centerCell.y + d[1];
+		int newZ = centerCell.z + d[2];
+		if (newX >= 0 && newY >= 0 && newZ >= 0 && newX < cellCount.x && newY < cellCount.y && newZ < cellCount.z) {
+			res.emplace_back(ivec3(newX, newY, newZ));
+		}
+	}
+	if (!res.empty()) {
+		res.emplace_back(centerCell);
+	}
+	return res;
+}
+
+double ParticleSystem::estimateColorFieldAtLocation(dvec3 pos) {
+	double density = 0.0;
+	//find neighbors cell
+	vector<ivec3> nCells = getNeighborCells(pos);
+	//for each possible neighbor in cells
+	for (auto cellPos : nCells) {
+		for (auto np : grid[cellPos.x + cellCount.x * (cellPos.y + cellCount.y * cellPos.z)]) {
+			double sqrDist = sqrDist = glm::distance2(pos, np->position);
+
+			if (sqrDist >= SQUARED_KERNEL_RADIUS) continue; //not neighbor
+			double temp = SQUARED_KERNEL_RADIUS - sqrDist;
+			density += temp * temp * temp; //optimization : not using pow
+		}
+	}
+	density *= PARTICLE_MASS * POLY6; //optimization
+	return density;
+	/*
+	 dvec3 surfaceNormal = dvec3(0.0);
+	//find neighbors cell
+	vector<ivec3> nCells = getNeighborCells(pos);
+	//for each possible neighbor in cells
+	for (auto cellPos : nCells) {
+		for (auto np : grid[cellPos.x + cellCount.x * (cellPos.y + cellCount.y * cellPos.z)]) {
+			double sqrDist = sqrDist = glm::distance2(pos, np->position);
+
+			if (sqrDist >= SQUARED_KERNEL_RADIUS) continue; //not neighbor
+			surfaceNormal = -POLY6_GRAD * (pos - np->position) / np->density * pow(SQUARED_KERNEL_RADIUS - sqrDist, 2);
+		}
+	}
+	return glm::length2(surfaceNormal);
+	 */
 }
 
 bool ParticleSystem::checkIsNeighbor(int pId1, int pId2) const {

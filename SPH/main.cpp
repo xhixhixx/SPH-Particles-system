@@ -1,5 +1,4 @@
 #define _CRT_SECURE_NO_WARNINGS
-//#include <GL/glut.h>
 #include <iostream>
 #include "header/ParticleSystem.h"
 #include "header/Constant.h"
@@ -35,6 +34,7 @@
 void idleCallback(void* pData);
 unique_ptr<Params> params;
 shared_ptr<ParticleSystem> pSystem;
+bool particleMode = true;
 
 float3 world_origin;
 float3 world_side;
@@ -49,7 +49,7 @@ float vox_size;
 MarchingCube *mc;
 float light_ambient[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 float light_diffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-float light_position[] = { -10.0f, -10.0f, -10.0f, 1.0f };
+float light_position[] = { 10.0f, 10.0f, 10.0f, 1.0f };
 
 class SPHWindow : public Fl_Glut_Window {
 public:
@@ -93,32 +93,24 @@ public:
 	//////////////////////////////////////////////////////
 	void init_marching_cube_model()
 	{
-		world_origin.x = -0.5f;
-		world_origin.y = -0.5f;
-		world_origin.z = -0.5f;
+		world_origin.x = - OFFSET_X;
+		world_origin.y = - OFFSET_Y;
+		world_origin.z = - OFFSET_Z;
 
 		world_side.x = BOX_SIZE_X;
 		world_side.y = BOX_SIZE_Y;
 		world_side.z = BOX_SIZE_Z;
 
-		vox_size = 0.1f;
-		row_vox = world_side.x / vox_size;
-		col_vox = world_side.y / vox_size;
-		len_vox = world_side.z / vox_size;
+		vox_size = 0.03f;
+		row_vox = world_side.x / vox_size + 1;
+		col_vox = world_side.y / vox_size + 1;
+		len_vox = world_side.z / vox_size + 1;
 		tot_vox = row_vox*col_vox*len_vox;
 
 		model_vox = (float3 *)malloc(sizeof(float3)*row_vox*col_vox*len_vox);
 		model_scalar = (float *)malloc(sizeof(float)*row_vox*col_vox*len_vox);
 
-		float model_radius = 0.8f;
-		float3 model_center;
-
-		model_center.x = 0.5f;
-		model_center.y = 0.5f;
-		model_center.z = 0.5f;
-
 		uint index;
-		float dist;
 		for (uint count_x = 0; count_x<row_vox; count_x++)
 		{
 			for (uint count_y = 0; count_y<col_vox; count_y++)
@@ -131,22 +123,15 @@ public:
 					model_vox[index].y = count_y*vox_size;
 					model_vox[index].z = count_z*vox_size;
 
-					dist = (model_vox[index].x - model_center.x)*(model_vox[index].x - model_center.x)
-						+ (model_vox[index].y - model_center.y)*(model_vox[index].y - model_center.y)
-						+ (model_vox[index].z - model_center.z)*(model_vox[index].z - model_center.z);
-
-					if (dist > model_radius*model_radius)
-					{
-						model_scalar[index] = 0.0f;
-						continue;
-					}
-
-					model_scalar[index] = pow(1.0 - dist / model_radius / model_radius, 3);
+					//get neighbors
+					//estimate density at vertex
+					//assign to scalar
+					model_scalar[index] = pSystem->estimateColorFieldAtLocation(dvec3(model_vox[index].x - OFFSET_X, model_vox[index].y - OFFSET_Y, model_vox[index].z - OFFSET_Z));
 				}
 			}
 		}
 
-		mc = new MarchingCube(row_vox, col_vox, len_vox, model_scalar, model_vox, world_origin, vox_size, 0.4f);
+		mc = new MarchingCube(row_vox, col_vox, len_vox, model_scalar, model_vox, world_origin, vox_size, 0.1f);
 	}
 	//////////////////////////////////////////////////////
 	//
@@ -182,7 +167,6 @@ public:
 	}
 
 	void RenderParticleSystem() {
-		glPointSize(PARTICLE_SIZE);
 		SetNormalParticleColor();
 		vector<shared_ptr<Particle>>& pList = pSystem->getParticles();
 
@@ -356,7 +340,18 @@ public:
 		glUseProgram(p);
 	}
 
-	void draw1(void) {
+	void draw() {
+		if (particleMode) {
+			drawParticleMode();
+		}
+		else {
+			drawFluidMode();
+		}
+
+		swap_buffers();
+	}
+
+	void drawFluidMode(void) {
 		if ((!valid())) {
 			reshape(WINDOW_WIDTH, WINDOW_HEIGHT);
 		}
@@ -375,8 +370,10 @@ public:
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		glUseProgram(0);
 		glPushMatrix();
-
+		GLfloat specular[] = { 1.0, 1.0, 1.0, 1.0 };
+		glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
 		glLightfv(GL_LIGHT1, GL_AMBIENT, light_ambient);
 		glLightfv(GL_LIGHT1, GL_DIFFUSE, light_diffuse);
 		glLightfv(GL_LIGHT1, GL_POSITION, light_position);
@@ -384,24 +381,34 @@ public:
 		glEnable(GL_LIGHTING);
 
 		mc->run();
-
 		glDisable(GL_LIGHTING);
 
 		glColor3f(1.0f, 0.0f, 0.0f);
 		drawContainer(OFFSET_X, OFFSET_Y, OFFSET_Z);
 
-		glColor3f(1.0, 1.0, 0.0f);
-		glPointSize(20.0f);
-		glBegin(GL_POINTS);
-		glVertex3f(10.0f, 10.0f, 10.0f);
-		glEnd();
+		//update Particle System for the next timestep
+		pSystem->update();
+		if (true) {
+			for (uint count_x = 0; count_x < row_vox; count_x++)
+			{
+				for (uint count_y = 0; count_y < col_vox; count_y++)
+				{
+					for (uint count_z = 0; count_z < len_vox; count_z++)
+					{
+						uint index = count_z*row_vox*col_vox + count_y*row_vox + count_x;
+						//get neighbors
+						//estimate density at vertex
+						//assign to scalar
+						model_scalar[index] = pSystem->estimateColorFieldAtLocation(dvec3(model_vox[index].x - OFFSET_X, model_vox[index].y - OFFSET_Y, model_vox[index].z - OFFSET_Z));
+					}
+				}
+			}
+		}
 
 		glPopMatrix();
-
-		swap_buffers();
 	}
 
-	void draw(void)
+	void drawParticleMode(void)
 	{
 		if (!p) {
 			initShaders();
@@ -438,9 +445,6 @@ public:
 		pSystem->update();
 
 		glPopMatrix();
-
-		//glutSwapBuffers();
-		swap_buffers();
 	}
 
 	void computePos(double deltaMove) {
@@ -556,6 +560,10 @@ void resetCb(Fl_Widget* widget, void* data) {
 	((Fl_Button*)data)->label("START");
 }
 
+void renderCb(Fl_Widget* widget, void* data) {
+	particleMode = !particleMode;
+}
+
 void onGravitySliderDrag(Fl_Widget* widget, void* data) {
 	params->gravity = ((Fl_Slider*)widget)->value();
 	stringstream ss;
@@ -645,6 +653,9 @@ int main(int argc, char* argv[])
 
 	Fl_Button *resetBtn = new Fl_Button(120, 20, 80, 25, "Reset");
 	resetBtn->callback(resetCb, startBtn);
+
+	Fl_Button *renderBtn = new Fl_Button(220, 20, 90, 25, "Toggle Mode");
+	renderBtn->callback(renderCb, renderBtn);
 
 	//slider control + value display
 	createSliderForParam("Gravity", 1.0, 20.0, params->gravity, onGravitySliderDrag);

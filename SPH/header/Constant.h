@@ -21,10 +21,9 @@
 #define NUM_PARTICLE_Y 40
 #define NUM_PARTICLE_Z 20
 #define INIT_PARTICLE_DISTANCE 0.02
-#define PARTICLE_SIZE 5.0f
 
 //world
-#define TIMESTEP 0.004 //second
+#define TIMESTEP 0.005 //second
 #define PARTICLE_MASS 0.01 //kg
 
 //kernel radius

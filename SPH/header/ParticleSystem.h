@@ -22,7 +22,10 @@ public:
 	void update();
 
 	vector<shared_ptr<Particle>>& getParticles() { return particles; }
-	vector<ivec3> getNeighborCells(int pId);
+	
+	vector<ivec3> getNeighborCells(int pId); //get neighbor cell by particle id
+	vector<ivec3> getNeighborCells(dvec3 pos); //get neighbor cell by coordinate
+	
 	ivec3 getCellCount() const { return cellCount; }
 	bool checkIsNeighbor(int pId1, int pId2) const;
 
@@ -32,7 +35,8 @@ public:
 	
 	int getState() { return running ? 1 : 0; }
 
-
+	//marching cube utility
+	double estimateColorFieldAtLocation(dvec3 pos);
 
 private:
 	void populateNeighborGrid();

@@ -35,6 +35,8 @@ MarchingCube::MarchingCube(uint _row_vox, uint _col_vox, uint _len_vox, float *_
 	pos = _pos;
 	origin = _origin;
 
+	step = _step;
+
 	isovalue = _isovalue;
 
 	normal = (float3 *)malloc(sizeof(float3)*tot_vox);
@@ -212,7 +214,14 @@ void MarchingCube::run()
 					{
 						index = triangle_table[flag_index][3 * count_triangle + count_point];
 
+						/*float tx = edge_vertex[index].x - 10.0f;
+						float ty = edge_vertex[index].y - 10.0f;
+						float tz = edge_vertex[index].z - 10.0f;
+						float l = sqrt(tx*tx + ty*ty + tz*tz);
+						glNormal3f(-tx/l, -ty/l, -tz/l);*/
+
 						glNormal3f(edge_norm[index].x, edge_norm[index].y, edge_norm[index].z);
+
 						glVertex3f(edge_vertex[index].x + origin.x,
 							edge_vertex[index].y + origin.y,
 							edge_vertex[index].z + origin.z);
