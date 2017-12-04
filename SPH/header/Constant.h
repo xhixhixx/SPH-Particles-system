@@ -23,8 +23,8 @@
 #define INIT_PARTICLE_DISTANCE 0.02
 
 //world
-#define TIMESTEP 0.005 //second
-#define PARTICLE_MASS 0.01 //kg
+#define TIMESTEP 0.004 //second
+#define PARTICLE_MASS 0.02 //kg
 
 //kernel radius
 #define KERNEL_RADIUS 0.04

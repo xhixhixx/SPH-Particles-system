@@ -209,6 +209,7 @@ void MarchingCube::run()
 						break;
 					}
 
+					//glBegin(GL_LINE_LOOP);
 					glBegin(GL_TRIANGLES);
 					for (uint count_point = 0; count_point < 3; count_point++)
 					{

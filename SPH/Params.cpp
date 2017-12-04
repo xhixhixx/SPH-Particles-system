@@ -7,7 +7,7 @@ Params::Params()
 {
 	restDensity = 1000.0;
 	collisionDamping = 0.3;
-	gasConstant = 1.0;
+	gasConstant = 0.80;
 	//viscos
 	setViscosVarSet(1.0);
 	//

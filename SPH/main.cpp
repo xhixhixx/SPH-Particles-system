@@ -58,7 +58,7 @@ public:
 		mode(FL_RGB | FL_ALPHA | FL_DOUBLE | FL_OPENGL3);
 		p = 0;
 		CreateParticleSystem();
-		init_marching_cube_model();
+		//init_marching_cube_model();
 		Fl::add_idle(idleCallback, this);
 	}
 
@@ -93,23 +93,31 @@ public:
 	//////////////////////////////////////////////////////
 	void init_marching_cube_model()
 	{
-		world_origin.x = - OFFSET_X;
-		world_origin.y = - OFFSET_Y;
-		world_origin.z = - OFFSET_Z;
+		vox_size = 0.01f;
 
-		world_side.x = BOX_SIZE_X;
-		world_side.y = BOX_SIZE_Y;
-		world_side.z = BOX_SIZE_Z;
-
-		vox_size = 0.03f;
+		world_side.x = BOX_SIZE_X + 2 * vox_size;
+		world_side.y = BOX_SIZE_Y + 2 * vox_size;
+		world_side.z = BOX_SIZE_Z + 2 * vox_size;
+		
 		row_vox = world_side.x / vox_size + 1;
 		col_vox = world_side.y / vox_size + 1;
 		len_vox = world_side.z / vox_size + 1;
+
+		world_origin.x = -OFFSET_X - vox_size;
+		world_origin.y = -OFFSET_Y - vox_size;
+		world_origin.z = -OFFSET_Z - vox_size;
+
 		tot_vox = row_vox*col_vox*len_vox;
 
 		model_vox = (float3 *)malloc(sizeof(float3)*row_vox*col_vox*len_vox);
 		model_scalar = (float *)malloc(sizeof(float)*row_vox*col_vox*len_vox);
 
+		recalculateVoxelScalar();
+
+		mc = new MarchingCube(row_vox, col_vox, len_vox, model_scalar, model_vox, world_origin, vox_size, 10.0f);
+	}
+
+	void recalculateVoxelScalar() {
 		uint index;
 		for (uint count_x = 0; count_x<row_vox; count_x++)
 		{
@@ -126,12 +134,10 @@ public:
 					//get neighbors
 					//estimate density at vertex
 					//assign to scalar
-					model_scalar[index] = pSystem->estimateColorFieldAtLocation(dvec3(model_vox[index].x - OFFSET_X, model_vox[index].y - OFFSET_Y, model_vox[index].z - OFFSET_Z));
+					model_scalar[index] = pSystem->estimateColorFieldAtLocation(dvec3(model_vox[index].x - world_side.x / 2.0, model_vox[index].y - world_side.y / 2.0, model_vox[index].z - world_side.z / 2.0));
 				}
 			}
 		}
-
-		mc = new MarchingCube(row_vox, col_vox, len_vox, model_scalar, model_vox, world_origin, vox_size, 0.1f);
 	}
 	//////////////////////////////////////////////////////
 	//
@@ -384,25 +390,12 @@ public:
 		glDisable(GL_LIGHTING);
 
 		glColor3f(1.0f, 0.0f, 0.0f);
-		drawContainer(OFFSET_X, OFFSET_Y, OFFSET_Z);
+		drawContainer(OFFSET_X + vox_size, OFFSET_Y + vox_size, OFFSET_Z + vox_size);
 
 		//update Particle System for the next timestep
 		pSystem->update();
 		if (true) {
-			for (uint count_x = 0; count_x < row_vox; count_x++)
-			{
-				for (uint count_y = 0; count_y < col_vox; count_y++)
-				{
-					for (uint count_z = 0; count_z < len_vox; count_z++)
-					{
-						uint index = count_z*row_vox*col_vox + count_y*row_vox + count_x;
-						//get neighbors
-						//estimate density at vertex
-						//assign to scalar
-						model_scalar[index] = pSystem->estimateColorFieldAtLocation(dvec3(model_vox[index].x - OFFSET_X, model_vox[index].y - OFFSET_Y, model_vox[index].z - OFFSET_Z));
-					}
-				}
-			}
+			recalculateVoxelScalar();
 		}
 
 		glPopMatrix();
@@ -654,8 +647,8 @@ int main(int argc, char* argv[])
 	Fl_Button *resetBtn = new Fl_Button(120, 20, 80, 25, "Reset");
 	resetBtn->callback(resetCb, startBtn);
 
-	Fl_Button *renderBtn = new Fl_Button(220, 20, 90, 25, "Toggle Mode");
-	renderBtn->callback(renderCb, renderBtn);
+	//Fl_Button *renderBtn = new Fl_Button(220, 20, 90, 25, "Toggle Mode");
+	//renderBtn->callback(renderCb, renderBtn);
 
 	//slider control + value display
 	createSliderForParam("Gravity", 1.0, 20.0, params->gravity, onGravitySliderDrag);

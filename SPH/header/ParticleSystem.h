@@ -38,6 +38,8 @@ public:
 	//marching cube utility
 	double estimateColorFieldAtLocation(dvec3 pos);
 
+	void exportFrames();
+
 private:
 	void populateNeighborGrid();
 
@@ -62,6 +64,9 @@ private:
 	int xCnt, yCnt, zCnt;
 	vector<shared_ptr<Particle>> particles;
 	vector<vector<shared_ptr<Particle>>> grid;
+
+	//
+	int updateCounter;
 
 	//State
 	bool running;

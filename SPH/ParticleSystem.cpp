@@ -2,9 +2,10 @@
 #include "header/Constant.h"
 #include <iostream>
 #include <glm/gtx/norm.hpp>
-#include <algorithm>
+#include <fstream>
 #include <thread>
 #include <mutex>
+#include <string>
 
 mutex mtx;
 
@@ -21,6 +22,7 @@ ParticleSystem::~ParticleSystem()
 
 void ParticleSystem::createParticleSystem()
 {
+	updateCounter = 0;
 	//Breaking Dam set
 	double widthX = xCnt * INIT_PARTICLE_DISTANCE + 0.6 * BOX_SIZE_X;
 	double widthY = yCnt * INIT_PARTICLE_DISTANCE + 0.2 * BOX_SIZE_Y;
@@ -49,6 +51,10 @@ void ParticleSystem::createParticleSystem()
 
 void ParticleSystem::update() {
 	if (!running) return;
+	
+	//exportFrames();
+
+	++updateCounter;
 	//update system
 	calcDensityPressureByThead(USING_MULTITHREADING);
 	calcForcesByThread(USING_MULTITHREADING);
@@ -157,7 +163,9 @@ vector<ivec3> ParticleSystem::getNeighborCells(dvec3 pos) {
 			res.emplace_back(ivec3(newX, newY, newZ));
 		}
 	}
-	if (!res.empty()) {
+	if (centerCell.x >= 0 && centerCell.x < cellCount.x 
+		&& centerCell.y >= 0 && centerCell.y < cellCount.y
+		&& centerCell.z >= 0 && centerCell.z < cellCount.z) {
 		res.emplace_back(centerCell);
 	}
 	return res;
@@ -194,6 +202,22 @@ double ParticleSystem::estimateColorFieldAtLocation(dvec3 pos) {
 	}
 	return glm::length2(surfaceNormal);
 	 */
+}
+
+void ParticleSystem::exportFrames() {
+	string path = "OBJ\\";
+	
+	ofstream myfile(path + "example" + to_string(updateCounter) + ".obj");
+	if (myfile.is_open())
+	{
+		for (auto p : particles) {
+			myfile << "v ";
+			myfile << to_string(p->position.x) + " " + to_string(p->position.y) + " " + to_string(p->position.z);
+			myfile << "\n";
+		}
+		myfile.close();
+	}
+	myfile.close();
 }
 
 bool ParticleSystem::checkIsNeighbor(int pId1, int pId2) const {
