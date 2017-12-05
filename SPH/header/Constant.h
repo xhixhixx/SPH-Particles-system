@@ -16,6 +16,13 @@
 #define OFFSET_Y (BOX_SIZE_Y / 2.0)
 #define OFFSET_Z (BOX_SIZE_Z / 2.0)
 
+#define PARTICLE_GEN_SOURCE dvec3(-0.3, 0.3, 0.0)
+
+//SCENE
+#define BREAKING_DAM_1_SCENE 0
+#define BREAKING_DAM_2_SCENE 1
+#define WATERFALL_SCENE		 2
+
 //num particle
 #define NUM_PARTICLE_X 20
 #define NUM_PARTICLE_Y 40

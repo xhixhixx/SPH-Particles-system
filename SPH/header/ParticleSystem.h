@@ -14,6 +14,7 @@ public:
 		yCnt = _yCnt;
 		zCnt = _zCnt;
 		running = false;
+		sceneNum = BREAKING_DAM_1_SCENE;
 	}
 	virtual ~ParticleSystem();
 
@@ -34,6 +35,11 @@ public:
 	void resetSystem();
 	
 	int getState() { return running ? 1 : 0; }
+	
+	void changeScene(int sceneId) { sceneNum = sceneId; }
+	int checkScene() { return sceneNum; }
+
+	void generateParticlesFromSource(dvec3 source);
 
 	//marching cube utility
 	double estimateColorFieldAtLocation(dvec3 pos);
@@ -58,6 +64,8 @@ private:
 	void updatePositionByThread(bool useThread = true);
 	void updatePositionByIndex(int start, int end);
 
+	void initBreakingDam();
+
 private:
 	const Params& params;
 	ivec3 cellCount;
@@ -70,6 +78,7 @@ private:
 
 	//State
 	bool running;
+	int sceneNum;
 };
 
 #endif

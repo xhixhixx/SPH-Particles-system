@@ -23,21 +23,22 @@ ParticleSystem::~ParticleSystem()
 void ParticleSystem::createParticleSystem()
 {
 	updateCounter = 0;
-	//Breaking Dam set
-	double widthX = xCnt * INIT_PARTICLE_DISTANCE + 0.6 * BOX_SIZE_X;
-	double widthY = yCnt * INIT_PARTICLE_DISTANCE + 0.2 * BOX_SIZE_Y;
-	double widthZ = zCnt * INIT_PARTICLE_DISTANCE + 0.6 * BOX_SIZE_Z;
-	
-	int id = 1;
-	for (int i = 0; i < xCnt; ++i) {
-		for (int j = 0; j < yCnt; ++j) {
-			for (int k = 0; k < zCnt; ++k) {
-				dvec3 pos(- widthX / 2 + i * INIT_PARTICLE_DISTANCE, - widthY / 2 + j * INIT_PARTICLE_DISTANCE, - widthZ / 2 + k * INIT_PARTICLE_DISTANCE);
-				particles.emplace_back(make_shared<Particle>(pos, id++, params.restDensity));
-			}
-		}
+	if (checkScene() == BREAKING_DAM_1_SCENE) {
+		//Breaking Dam set 1
+		xCnt = NUM_PARTICLE_X;
+		yCnt = NUM_PARTICLE_Y;
+		zCnt = NUM_PARTICLE_Z;
+		
+		initBreakingDam();
 	}
-
+	else if (checkScene() == BREAKING_DAM_2_SCENE) {
+		//Breaking Dam set2
+		xCnt = NUM_PARTICLE_X / 2;
+		yCnt = NUM_PARTICLE_Y / 2;
+		zCnt = NUM_PARTICLE_Z / 2;
+		
+		initBreakingDam();
+	}
 	//initialize neighbor grid
 	int xCell = int(ceil(BOX_SIZE_X / CELL_SIZE));
 	int yCell = int(ceil(BOX_SIZE_Y / CELL_SIZE));
@@ -47,6 +48,22 @@ void ParticleSystem::createParticleSystem()
 	int temp = xCell * yCell * zCell;
 	grid.resize(temp, vector<shared_ptr<Particle>>());
 	populateNeighborGrid();
+}
+
+void ParticleSystem::initBreakingDam() {
+	double widthX = xCnt * INIT_PARTICLE_DISTANCE + 0.6 * BOX_SIZE_X;
+	double widthY = yCnt * INIT_PARTICLE_DISTANCE + 0.2 * BOX_SIZE_Y;
+	double widthZ = zCnt * INIT_PARTICLE_DISTANCE + 0.6 * BOX_SIZE_Z;
+
+	int id = 1;
+	for (int i = 0; i < xCnt; ++i) {
+		for (int j = 0; j < yCnt; ++j) {
+			for (int k = 0; k < zCnt; ++k) {
+				dvec3 pos(-widthX / 2 + i * INIT_PARTICLE_DISTANCE, -widthY / 2 + j * INIT_PARTICLE_DISTANCE, -widthZ / 2 + k * INIT_PARTICLE_DISTANCE);
+				particles.emplace_back(make_shared<Particle>(pos, id++, params.restDensity));
+			}
+		}
+	}
 }
 
 void ParticleSystem::update() {
@@ -92,7 +109,6 @@ void ParticleSystem::updatePositionByIndex(int start, int end) {
 		p->position += p->velocity * TIMESTEP + (p->prevAcceleration + dvec3(0.0, -params.gravity, 0.0)) * (0.5 * TIMESTEP * TIMESTEP);
 		p->velocity += (p->acceleration + dvec3(0.0, -params.gravity, 0.0) + p->prevAcceleration + dvec3(0.0, -params.gravity, 0.0)) * (0.5 * TIMESTEP);
 
-		double temp = glm::length2(p->velocity);
 		p->prevAcceleration = p->acceleration;
 
 		//colision with container
@@ -171,6 +187,22 @@ vector<ivec3> ParticleSystem::getNeighborCells(dvec3 pos) {
 	return res;
 }
 
+void ParticleSystem::generateParticlesFromSource(dvec3 source) {
+	//Particle generator
+	//if (!isBreakDamScene && particles.size() <= 10000 && running) {
+		/*for (int i = 0; i < 3; ++i) {
+			for (int j = 0; j < 3; ++j) {
+				for (int k = 0; k < 3; ++k) {
+					dvec3 pos(PARTICLE_GEN_SOURCE.x + i * (INIT_PARTICLE_DISTANCE + 0.01),
+						PARTICLE_GEN_SOURCE.y + j * (INIT_PARTICLE_DISTANCE + 0.01),
+						PARTICLE_GEN_SOURCE.z + k * (INIT_PARTICLE_DISTANCE + 0.01));
+					particles.emplace_back(make_shared<Particle>(pos, particles.size() + 1, params.restDensity));
+				}
+			}
+		}*/
+	//}
+}
+
 double ParticleSystem::estimateColorFieldAtLocation(dvec3 pos) {
 	double density = 0.0;
 	//find neighbors cell
@@ -213,6 +245,11 @@ void ParticleSystem::exportFrames() {
 		for (auto p : particles) {
 			myfile << "v ";
 			myfile << to_string(p->position.x) + " " + to_string(p->position.y) + " " + to_string(p->position.z);
+			myfile << "\n";
+		}
+		for (auto p : particles) {
+			myfile << "vn ";
+			myfile << to_string(p->normal.x) + " " + to_string(p->normal.y) + " " + to_string(p->normal.z);
 			myfile << "\n";
 		}
 		myfile.close();
@@ -358,7 +395,7 @@ void ParticleSystem::calcForcesByIndex(int start, int end) {
 		//for each possible neighbor in cells
 		dvec3 totalPressureForce = dvec3(0.0);
 		dvec3 totalViscoForce = dvec3(0.0);
-		dvec3 surfaceNormal = dvec3(0.0);
+		p->normal = dvec3(0.0);
 		dvec3 totalTensionForce = dvec3(0.0);
 		for (auto cellPos : nCells) {
 			for (auto np : grid[cellPos.x + cellCount.x * (cellPos.y + cellCount.y * cellPos.z)]) {
@@ -385,13 +422,13 @@ void ParticleSystem::calcForcesByIndex(int start, int end) {
 				//////////////////////////
 				//tension forces
 				//////////////////////////
-				surfaceNormal = -POLY6_GRAD * (p->position - np->position) / np->density * pow(SQUARED_KERNEL_RADIUS - sqrDist, 2);
+				p->normal = -POLY6_GRAD * (p->position - np->position) / np->density * pow(SQUARED_KERNEL_RADIUS - sqrDist, 2);
 				totalTensionForce += POLY6_LAPL / np->density * (sqrDist - SQUARED_KERNEL_RADIUS) * (sqrDist - 3 / 4 * (SQUARED_KERNEL_RADIUS - sqrDist));
 			}
 		}
-		double sqrNormalLength = glm::length2(surfaceNormal);
+		double sqrNormalLength = glm::length2(p->normal);
 		if (sqrNormalLength > params.tensionThresh) {
-			totalTensionForce = params.tensionCoef * (totalTensionForce + POLY6_LAPL / p->density * SQUARED_KERNEL_RADIUS * 3 / 4 * SQUARED_KERNEL_RADIUS) * surfaceNormal / sqrt(sqrNormalLength);
+			totalTensionForce = params.tensionCoef * (totalTensionForce + POLY6_LAPL / p->density * SQUARED_KERNEL_RADIUS * 3 / 4 * SQUARED_KERNEL_RADIUS) * p->normal / sqrt(sqrNormalLength);
 			p->isSurface = true;
 		}
 		else {

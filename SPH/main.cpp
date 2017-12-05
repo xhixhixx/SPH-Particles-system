@@ -25,6 +25,7 @@
 #include <iomanip>
 #include <sstream>
 #include "header/MarchingCube.h"
+#include <thread>
 
 
 #define CAMERA_MOVEBACK_X 0.0f
@@ -553,8 +554,22 @@ void resetCb(Fl_Widget* widget, void* data) {
 	((Fl_Button*)data)->label("START");
 }
 
-void renderCb(Fl_Widget* widget, void* data) {
-	particleMode = !particleMode;
+void waterfallSceneCb(Fl_Widget* widget, void* data) {
+	pSystem->changeScene(WATERFALL_SCENE);
+	pSystem->resetSystem();
+	((Fl_Button*)data)->label("START");
+}
+
+void scene1Cb(Fl_Widget* widget, void* data) {
+	pSystem->changeScene(BREAKING_DAM_1_SCENE);
+	pSystem->resetSystem();
+	((Fl_Button*)data)->label("START");
+}
+
+void scene2Cb(Fl_Widget* widget, void* data) {
+	pSystem->changeScene(BREAKING_DAM_2_SCENE);
+	pSystem->resetSystem();
+	((Fl_Button*)data)->label("START");
 }
 
 void onGravitySliderDrag(Fl_Widget* widget, void* data) {
@@ -647,8 +662,8 @@ int main(int argc, char* argv[])
 	Fl_Button *resetBtn = new Fl_Button(120, 20, 80, 25, "Reset");
 	resetBtn->callback(resetCb, startBtn);
 
-	//Fl_Button *renderBtn = new Fl_Button(220, 20, 90, 25, "Toggle Mode");
-	//renderBtn->callback(renderCb, renderBtn);
+	Fl_Button *waterfallSceneBtn = new Fl_Button(220, 20, 90, 25, "Waterfall");
+	waterfallSceneBtn->callback(waterfallSceneCb, startBtn);
 
 	//slider control + value display
 	createSliderForParam("Gravity", 1.0, 20.0, params->gravity, onGravitySliderDrag);
@@ -659,7 +674,12 @@ int main(int argc, char* argv[])
 	createSliderForParam("Surface Tension Coefficient", 1.0, 5.0, params->tensionCoef, onTensionCoefSliderDrag);
 	createSliderForParam("Surface Tension Threshold", 0.0, 100.0, params->tensionThresh, onTensionThreshSliderDrag);
 
-	
+	Fl_Button *scene1Btn = new Fl_Button(20, 480, 90, 25, "Scene 1");
+	scene1Btn->callback(scene1Cb, startBtn);
+
+	Fl_Button *scene2Btn = new Fl_Button(20, 520, 90, 25, "Scene 2");
+	scene2Btn->callback(scene2Cb, startBtn);
+
 
 	window->end();
 	window->show(argc, argv);

@@ -14,6 +14,7 @@ public:
 		//default color blue
 		color = dvec3(0.0, 0.0, 1.0);
 		isSurface = false;
+		normal = dvec3(0.0, 0.0, 0.0);
 		reCalculateGridCell();
 	};
 	Particle(dvec3& pos, int _id, double restDens) {
@@ -23,6 +24,7 @@ public:
 		velocity = dvec3(0.0);
 		acceleration = dvec3(0.0);
 		prevAcceleration = dvec3(0.0);
+		normal = dvec3(0.0, 0.0, 0.0);
 
 		density = restDens;
 		pressure = 0.0;
@@ -47,6 +49,8 @@ public:
 	dvec3 velocity;
 	dvec3 acceleration;
 	dvec3 prevAcceleration;//for leapfrog
+
+	dvec3 normal;
 	
 	double density;
 	double pressure;
