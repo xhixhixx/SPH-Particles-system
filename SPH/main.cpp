@@ -218,7 +218,8 @@ public:
 
 	//draw waterfall plane
 	void drawWaterfall() {
-		glColor3d(1.0, 0.0, 0.0);
+
+		glColor3d(0.8, 0.8, 0.8);
 		glBegin(GL_POLYGON);
 		glVertex3d(-OFFSET_X, -OFFSET_Y + 0.6, OFFSET_Z);
 		glVertex3d(-OFFSET_X, -OFFSET_Y + 0.6, -OFFSET_Z);
@@ -226,15 +227,56 @@ public:
 		glVertex3d(-OFFSET_X + 0.3, -OFFSET_Y + 0.3, OFFSET_Z);
 		glEnd();
 		//sides
-		glColor3d(0.0, 1.0, 0.0);
 		glBegin(GL_POLYGON);
 		glVertex3d(-OFFSET_X, -OFFSET_Y + 0.6, OFFSET_Z);
 		glVertex3d(-OFFSET_X + 0.3, -OFFSET_Y + 0.3, OFFSET_Z);
 		glVertex3d(-OFFSET_X + 0.3, -OFFSET_Y, OFFSET_Z);
 		glVertex3d(-OFFSET_X, -OFFSET_Y, OFFSET_Z);
-
 		glEnd();
-
+		glBegin(GL_POLYGON);
+		glVertex3d(-OFFSET_X + 0.3, -OFFSET_Y + 0.3, OFFSET_Z);
+		glVertex3d(-OFFSET_X + 0.3, -OFFSET_Y, OFFSET_Z);
+		glVertex3d(-OFFSET_X + 0.3, -OFFSET_Y, -OFFSET_Z);
+		glVertex3d(-OFFSET_X + 0.3, -OFFSET_Y + 0.3, -OFFSET_Z);
+		glEnd();
+		glBegin(GL_POLYGON);
+		glVertex3d(-OFFSET_X, -OFFSET_Y + 0.6, -OFFSET_Z);
+		glVertex3d(-OFFSET_X + 0.3, -OFFSET_Y + 0.3, -OFFSET_Z);
+		glVertex3d(-OFFSET_X + 0.3, -OFFSET_Y, -OFFSET_Z);
+		glVertex3d(-OFFSET_X, -OFFSET_Y, -OFFSET_Z);
+		glEnd();
+		glBegin(GL_POLYGON);
+		glVertex3d(-OFFSET_X, -OFFSET_Y, OFFSET_Z);
+		glVertex3d(-OFFSET_X, -OFFSET_Y, -OFFSET_Z);
+		glVertex3d(-OFFSET_X, -OFFSET_Y + 0.6, -OFFSET_Z);
+		glVertex3d(-OFFSET_X, -OFFSET_Y + 0.6, OFFSET_Z);
+		glEnd();
+		//lines
+		glColor3d(1.0, 0.0, 0.0);
+		glBegin(GL_LINE_LOOP);
+		glVertex3d(-OFFSET_X, -OFFSET_Y + 0.6, OFFSET_Z);
+		glVertex3d(-OFFSET_X + 0.3, -OFFSET_Y + 0.3, OFFSET_Z);
+		glVertex3d(-OFFSET_X + 0.3, -OFFSET_Y, OFFSET_Z);
+		glVertex3d(-OFFSET_X, -OFFSET_Y, OFFSET_Z);
+		glEnd();
+		glBegin(GL_LINE_LOOP);
+		glVertex3d(-OFFSET_X, -OFFSET_Y + 0.6, OFFSET_Z);
+		glVertex3d(-OFFSET_X, -OFFSET_Y + 0.6, -OFFSET_Z);
+		glVertex3d(-OFFSET_X + 0.3, -OFFSET_Y + 0.3, -OFFSET_Z);
+		glVertex3d(-OFFSET_X + 0.3, -OFFSET_Y + 0.3, OFFSET_Z);
+		glEnd();
+		glBegin(GL_LINE_LOOP);
+		glVertex3d(-OFFSET_X + 0.3, -OFFSET_Y + 0.3, OFFSET_Z);
+		glVertex3d(-OFFSET_X + 0.3, -OFFSET_Y, OFFSET_Z);
+		glVertex3d(-OFFSET_X + 0.3, -OFFSET_Y, -OFFSET_Z);
+		glVertex3d(-OFFSET_X + 0.3, -OFFSET_Y + 0.3, -OFFSET_Z);
+		glEnd();
+		glBegin(GL_LINE_LOOP);
+		glVertex3d(-OFFSET_X, -OFFSET_Y + 0.6, -OFFSET_Z);
+		glVertex3d(-OFFSET_X + 0.3, -OFFSET_Y + 0.3, -OFFSET_Z);
+		glVertex3d(-OFFSET_X + 0.3, -OFFSET_Y, -OFFSET_Z);
+		glVertex3d(-OFFSET_X, -OFFSET_Y, -OFFSET_Z);
+		glEnd();
 	}
 
 	//create a container of -10 10 in x, -5, 5 in y, -5,5 in z
@@ -401,7 +443,7 @@ public:
 		glUseProgram(0);
 		glPushMatrix();
 		GLfloat specular[] = { 1.0, 1.0, 1.0, 1.0 };
-		glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
+		glLightfv(GL_LIGHT1, GL_SPECULAR, specular);
 		glLightfv(GL_LIGHT1, GL_AMBIENT, light_ambient);
 		glLightfv(GL_LIGHT1, GL_DIFFUSE, light_diffuse);
 		glLightfv(GL_LIGHT1, GL_POSITION, light_position);
@@ -569,6 +611,18 @@ void startStopCb(Fl_Widget *w, void *) {
 	bt->label(pSystem->getState() ? "STOP" : "START");
 }
 
+void threadCb(Fl_Widget *w, void *) {
+	if (params->getThreadingMode()) {
+		params->setThreadingMode(SINGLETHREADING);
+	}
+	else {
+		params->setThreadingMode(MULTITHREADING);
+	}
+	//
+	Fl_Button* bt = (Fl_Button*)w;
+	bt->label(params->getThreadingMode() ? "Single-Thread" : "Multi-thread");
+}
+
 void onExitCb(Fl_Widget* widget, void*) {
 	exit(0);
 }
@@ -683,8 +737,11 @@ int main(int argc, char* argv[])
 	Fl_Button *startBtn = new Fl_Button(20, 20, 80, 25, "START");
 	startBtn->callback(startStopCb, 0);
 
-	Fl_Button *resetBtn = new Fl_Button(120, 20, 80, 25, "Reset");
+	Fl_Button *resetBtn = new Fl_Button(110, 20, 80, 25, "Reset");
 	resetBtn->callback(resetCb, startBtn);
+
+	Fl_Button *threadBtn = new Fl_Button(200, 20, 100, 25, "Single-Thread");
+	threadBtn->callback(threadCb, 0);
 
 	//slider control + value display
 	createSliderForParam("Gravity", 1.0, 20.0, params->gravity, onGravitySliderDrag);

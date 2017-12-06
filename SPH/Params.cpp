@@ -15,6 +15,7 @@ Params::Params()
 	tensionThresh = 40.0;
 
 	gravity = 2.8;
+	threadingMode = MULTITHREADING;
 }
 
 

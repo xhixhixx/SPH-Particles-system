@@ -88,11 +88,12 @@ void ParticleSystem::update() {
 
 	++updateCounter;
 	//update system
-	calcDensityPressureByThead(USING_MULTITHREADING);
-	calcForcesByThread(USING_MULTITHREADING);
+	int useMultithread = params.getThreadingMode();
+	calcDensityPressureByThead(useMultithread);
+	calcForcesByThread(useMultithread);
 	//update acceleration and position
 	//for all particle
-	updatePositionByThread(USING_MULTITHREADING);
+	updatePositionByThread(useMultithread);
 	////////////////////////////
 	// position change 
 	// Need to update neighbor
@@ -309,7 +310,7 @@ void ParticleSystem::populateNeighborGrid() {
 	fill(grid.begin(), grid.end(), vector<shared_ptr<Particle>>());
 	
 	//repopulate
-	calcCellPosByThread(USING_MULTITHREADING);
+	calcCellPosByThread(params.getThreadingMode());
 }
 
 void ParticleSystem::clearGridByThread(bool useThread) {

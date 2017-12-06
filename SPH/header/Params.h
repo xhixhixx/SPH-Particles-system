@@ -17,7 +17,12 @@ public:
 
 	double gravity;
 
+	int threadingMode;
+
 public:
 	void setViscosVarSet(double vis);
+
+	void setThreadingMode(int mode) { threadingMode = mode; }
+	int getThreadingMode() const { return threadingMode; }
 };
 

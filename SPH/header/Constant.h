@@ -5,7 +5,8 @@
 #define WINDOW_HEIGHT 720
 
 //THREADING
-#define USING_MULTITHREADING true
+#define MULTITHREADING  1
+#define SINGLETHREADING 0
 #define NUM_THREAD 100
 
 //container size
