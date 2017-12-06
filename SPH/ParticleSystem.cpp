@@ -23,21 +23,40 @@ ParticleSystem::~ParticleSystem()
 void ParticleSystem::createParticleSystem()
 {
 	updateCounter = 0;
-	if (checkScene() == BREAKING_DAM_1_SCENE) {
+	if (sceneNum == BREAKING_DAM_1_SCENE) {
 		//Breaking Dam set 1
 		xCnt = NUM_PARTICLE_X;
 		yCnt = NUM_PARTICLE_Y;
 		zCnt = NUM_PARTICLE_Z;
+
+		double widthX = xCnt * INIT_PARTICLE_DISTANCE + 0.6 * BOX_SIZE_X;
+		double widthY = yCnt * INIT_PARTICLE_DISTANCE + 0.6 * BOX_SIZE_Y;
+		double widthZ = zCnt * INIT_PARTICLE_DISTANCE + 0.6 * BOX_SIZE_Z;
 		
-		initBreakingDam();
+		initBreakingDam(widthX, widthY, widthZ);
 	}
-	else if (checkScene() == BREAKING_DAM_2_SCENE) {
+	else if (sceneNum == BREAKING_DAM_2_SCENE) {
 		//Breaking Dam set2
-		xCnt = NUM_PARTICLE_X / 2;
+		xCnt = NUM_PARTICLE_X;
 		yCnt = NUM_PARTICLE_Y / 2;
-		zCnt = NUM_PARTICLE_Z / 2;
+		zCnt = NUM_PARTICLE_Z;
+
+		double widthX = xCnt * INIT_PARTICLE_DISTANCE + 0.6 * BOX_SIZE_X;
+		double widthY = yCnt * INIT_PARTICLE_DISTANCE + 0.4 * BOX_SIZE_Y;
+		double widthZ = zCnt * INIT_PARTICLE_DISTANCE + 0.6 * BOX_SIZE_Z;
 		
-		initBreakingDam();
+		initBreakingDam(widthX, widthY, widthZ);
+	}
+	else {
+		xCnt = NUM_PARTICLE_X / 2;
+		yCnt = 70;
+		zCnt = NUM_PARTICLE_Z / 2;
+
+		double widthX = xCnt * INIT_PARTICLE_DISTANCE + 0.8 * BOX_SIZE_X;
+		double widthY = yCnt * INIT_PARTICLE_DISTANCE - 0.3 * BOX_SIZE_Y;
+		double widthZ = zCnt * INIT_PARTICLE_DISTANCE + 0.0 * BOX_SIZE_Z;
+
+		initBreakingDam(widthX, widthY, widthZ);
 	}
 	//initialize neighbor grid
 	int xCell = int(ceil(BOX_SIZE_X / CELL_SIZE));
@@ -50,11 +69,7 @@ void ParticleSystem::createParticleSystem()
 	populateNeighborGrid();
 }
 
-void ParticleSystem::initBreakingDam() {
-	double widthX = xCnt * INIT_PARTICLE_DISTANCE + 0.6 * BOX_SIZE_X;
-	double widthY = yCnt * INIT_PARTICLE_DISTANCE + 0.2 * BOX_SIZE_Y;
-	double widthZ = zCnt * INIT_PARTICLE_DISTANCE + 0.6 * BOX_SIZE_Z;
-
+void ParticleSystem::initBreakingDam(double widthX, double widthY, double widthZ) {
 	int id = 1;
 	for (int i = 0; i < xCnt; ++i) {
 		for (int j = 0; j < yCnt; ++j) {
@@ -115,6 +130,7 @@ void ParticleSystem::updatePositionByIndex(int start, int end) {
 		bool negateX = false;
 		bool negateY = false;
 		bool negateZ = false;
+
 		if (p->position.x < -OFFSET_X) {
 			p->position.x = -OFFSET_X;
 			negateX = true;
@@ -139,6 +155,19 @@ void ParticleSystem::updatePositionByIndex(int start, int end) {
 			p->position.z = OFFSET_Z;
 			negateZ = true;
 		}
+
+		//colision with waterfall
+		if (sceneNum == WATERFALL_SCENE) {
+			if (p->position.x >= -OFFSET_X && p->position.x < -OFFSET_X + 0.3 && p->position.y >= -OFFSET_Y && p->position.y < -OFFSET_Y + 0.3) {
+				p->position.x = -OFFSET_X + 0.3;
+				negateX = true;
+			}
+			if (p->position.x >= -OFFSET_X && p->position.x < -OFFSET_X + 0.3 && p->position.y >= -OFFSET_Y + 0.3 && p->position.y < -OFFSET_Y + 0.1 - p->position.x) {
+				p->position.y = -OFFSET_Y - p->position.x + 0.1;
+				negateY = true;
+			}
+		}
+
 		if (negateX) {
 			p->velocity.x = -p->velocity.x * params.collisionDamping;
 		}

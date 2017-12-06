@@ -10,7 +10,7 @@
 
 //container size
 #define BOX_SIZE_X 1.0
-#define BOX_SIZE_Y 1.0
+#define BOX_SIZE_Y 2.0
 #define BOX_SIZE_Z 1.0
 #define OFFSET_X (BOX_SIZE_X / 2.0)
 #define OFFSET_Y (BOX_SIZE_Y / 2.0)
@@ -31,7 +31,7 @@
 
 //world
 #define TIMESTEP 0.004 //second
-#define PARTICLE_MASS 0.02 //kg
+#define PARTICLE_MASS 0.01 //kg
 
 //kernel radius
 #define KERNEL_RADIUS 0.04

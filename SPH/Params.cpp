@@ -14,7 +14,7 @@ Params::Params()
 	tensionCoef = 1.0;
 	tensionThresh = 40.0;
 
-	gravity = 5.8;
+	gravity = 2.8;
 }
 
 

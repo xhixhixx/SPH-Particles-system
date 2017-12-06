@@ -64,7 +64,7 @@ private:
 	void updatePositionByThread(bool useThread = true);
 	void updatePositionByIndex(int start, int end);
 
-	void initBreakingDam();
+	void initBreakingDam(double wX, double wY, double wZ);
 
 private:
 	const Params& params;
