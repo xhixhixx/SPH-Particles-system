@@ -1,3 +1,4 @@
+//Ref: https://github.com/finallyjustice/sphfluid/tree/master/SPH_CPU_3D_v1/Shader
 void main()
 {
     const vec3 L = vec3(0.5, 0.5, 1.0);

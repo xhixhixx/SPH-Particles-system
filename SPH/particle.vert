@@ -1,3 +1,4 @@
+//Ref: https://github.com/finallyjustice/sphfluid/tree/master/SPH_CPU_3D_v1/Shader
 void main()
 {
 	vec3 E = vec3(gl_ModelViewMatrix * vec4(gl_Vertex.xyz, 1.0));
