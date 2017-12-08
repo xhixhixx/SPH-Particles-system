@@ -217,22 +217,6 @@ vector<ivec3> ParticleSystem::getNeighborCells(dvec3 pos) {
 	return res;
 }
 
-void ParticleSystem::generateParticlesFromSource(dvec3 source) {
-	//Particle generator
-	//if (!isBreakDamScene && particles.size() <= 10000 && running) {
-		/*for (int i = 0; i < 3; ++i) {
-			for (int j = 0; j < 3; ++j) {
-				for (int k = 0; k < 3; ++k) {
-					dvec3 pos(PARTICLE_GEN_SOURCE.x + i * (INIT_PARTICLE_DISTANCE + 0.01),
-						PARTICLE_GEN_SOURCE.y + j * (INIT_PARTICLE_DISTANCE + 0.01),
-						PARTICLE_GEN_SOURCE.z + k * (INIT_PARTICLE_DISTANCE + 0.01));
-					particles.emplace_back(make_shared<Particle>(pos, particles.size() + 1, params.restDensity));
-				}
-			}
-		}*/
-	//}
-}
-
 double ParticleSystem::estimateColorFieldAtLocation(dvec3 pos) {
 	double density = 0.0;
 	//find neighbors cell

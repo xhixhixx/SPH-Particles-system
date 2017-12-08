@@ -39,8 +39,6 @@ public:
 	void changeScene(int sceneId) { sceneNum = sceneId; }
 	int checkScene() { return sceneNum; }
 
-	void generateParticlesFromSource(dvec3 source);
-
 	//marching cube utility
 	double estimateColorFieldAtLocation(dvec3 pos);
 
